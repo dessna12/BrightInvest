@@ -1,0 +1,81 @@
+﻿# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Oo]bj/
+[Bb]in/
+
+# User-specific files
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Mono auto generated files
+mono_crash.*
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# VS Code directories
+.vscode/
+.vscode/settings.json
+
+# Visual Studio specific files
+.vs/
+.vscode/
+.idea/
+
+# Rider specific files
+.idea/
+
+# Compiled binary files
+*.dll
+*.exe
+*.pdb
+*.dll.config
+
+# Generated files
+*.log
+*.cache
+*.config
+*.db
+
+# Package directories
+*.nuget/
+*.packages/
+
+# ASP.NET Core
+appsettings.json
+appsettings.Development.json
+
+# Entity Framework Core Migrations
+Migrations/
+
+# JetBrains Rider settings
+.idea/
+.idea/*
+
+# Logs
+*.log
+logs/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Web files (Node.js, NPM)
+node_modules/
+
+# Lock files
+project.lock.json
