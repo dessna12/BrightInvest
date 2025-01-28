@@ -1,0 +1,47 @@
+
+link : https://mermaid.live/edit#pako:eNqNVF1v2jAU_SuWn-gaUFIaSKNpEito60MrJugetuzBS1ywSGxm36BljP9exwE7FNrND2Cf--F7zr3xFqciozjGaU6UGjOykKRIONJrKiQ8iZwJlOAgwajb_aB3fq_3Th-s8TNTIGT1HyF3fEMVFJRD4zxSigJ6_7fbfcV0JocxTCVLaePY_Jra3eXbBkWoyzg4-G58wC8VSMYX6IEU1GJjAnTOCopuJSXABK8Ba81oygqS60oZMJJ_JXnpjKMscww6zG7jFrELFKONYJkNus2Fov8MQ8dxu4S3KTs_y_my5uzwFuna8KUkHBhUJ7ympUyXRNGWtrVVS2BNZ_WY0Tw_E1PDR_4_hdDiqVEKbOPQTxRcqUbTTs13n_wsZTMBlu2-xwZ0VF2H5yxdUXmKtzuv0cnD4z2Cak2_T36VWh4PfRQ88_QoVGsQP14vxFBvVeOm6LBp2Q6apXXnj0RrpJiBSFcG77RIeTYVqqW9eFuel99luzbTmTfqmgt4MdnNbO9TTTjIqnMyj9jDBZUFYZl-Rcx1CYYl1TfgWG8zIlcJTvhO-5ESxKziKY6fSK6oh6UoF0t7Ktd1hfs3yKI0Y_r2-_0rVf95eE34NyG0D8iSmiOOt_g3jv2er1cwDK-DYDCM-mEYReFg6OEKxze94CoY-qEfhlf9QRQMdh7-Y7L4vRuzon7Qv9YrGu6eAQdalRw
+
+classDiagram
+    Portfolio "1" --> "0..*" PortfolioHistory
+    Portfolio "1" --> "0..*" Investment
+    Asset <|-- Investment
+    Asset "1" --> "0..*" AssetPrice
+    
+    class Portfolio{
+      -int PortfolioID
+      +string Name
+      +DateTime CreationDate
+      +decimal InitialValue
+      +AddInvestment(investment: Investment) : void
+      +CloseInvestment(investment: Investment ) : void
+    }
+
+    class Investment{
+      +int InvestmentID
+      +int Quantity
+      +decimal PurchasePrice
+      +date PurchaseDate
+      +decimal SellPrice
+      +date SellDate
+      +bool IsActive
+      +GetInvestmentValue() : decimal
+    }
+
+    class Asset{
+        -int AssetID
+        +string Ticker
+        +string Name
+        +ENUM type[Equity, Bond, Crypto]
+    }
+
+    class AssetPrice{
+        +DateTime DateTime
+        +decimal closePrice
+        +GetStockPrice(int AssetID, DateTime date): decimal
+    }
+
+    class PortfolioHistory{
+        +date DateTime
+        +decimal TotalValue
+        +AddHistoryEntry() : void
+    }
