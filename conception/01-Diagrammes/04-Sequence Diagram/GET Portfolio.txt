@@ -1,0 +1,61 @@
+@startuml
+title BrightInvest Architecture Sequence - GET /portfolio
+
+actor Client
+
+box "Presentation Layer" #lightblue
+    participant "PortfolioController" as Controller
+end box
+
+box "Application Layer" #lightgreen
+    participant "PortfolioUseCase" as UseCase
+    participant "IValidator" as IValidator
+    participant "PortfolioDTO" as DTO
+end box
+
+box "Domain Layer" #lightyellow
+    participant "IPortfolioRepository" as IRepository
+    participant "PortfolioEntity" as Entity
+end box
+
+box "Infrastructure Layer" #lightcoral
+    participant "PortfolioRepository" as Repository
+    database "SQL Database" as Database
+end box
+
+Client -> Controller: GET /portfolio (API Call)
+activate Controller
+
+Controller -> IValidator: Validate request
+activate IValidator
+IValidator -> Controller: Validation Result
+deactivate IValidator
+
+Controller -> UseCase: Execute(request)
+activate UseCase
+
+UseCase -> IRepository: GetPortfolio()
+activate IRepository
+IRepository -> Repository: Fetch data
+activate Repository
+
+Repository -> Database: SELECT * FROM portfolios
+Database --> Repository: Return raw portfolio data
+Repository --> IRepository: Convert raw data to PortfolioEntity
+deactivate Repository
+
+IRepository --> UseCase: Return PortfolioEntity
+deactivate IRepository
+
+UseCase -> Entity: Process business logic
+UseCase -> DTO: Transform Entity to DTO
+DTO --> UseCase: Return DTO
+deactivate DTO
+
+UseCase --> Controller: Return PortfolioDTO
+deactivate UseCase
+
+Controller --> Client: Return PortfolioDTO (JSON)
+deactivate Controller
+
+@enduml
