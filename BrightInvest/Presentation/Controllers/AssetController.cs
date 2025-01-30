@@ -25,10 +25,11 @@ namespace BrightInvest.Presentation.Controllers
 		// GET: api/asset
 		[HttpGet]
 		[Route("/assets")]
-		public IEnumerable<string> Get()
+		public IEnumerable<Asset> Get()
 		{
-			//List<Asset> assets = _context.Assets.ToList();
-			return new string[] { "value1", "value2" };
+			List<Asset> assets = _context.Assets.ToList();
+
+			return assets;
 
 			//return Json(assets);
 		}

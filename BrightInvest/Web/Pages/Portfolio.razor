@@ -2,6 +2,8 @@
 @using BrightInvest.Domain.Entities
 @inject NavigationManager Navigation
 
+
+
 <PageTitle>Portfolio</PageTitle>
 
 <p> @asset.Name @asset.Ticker </p>
@@ -9,6 +11,7 @@
 @code {
 
 	Asset asset = new Asset("GOOGL", "Alphabet Inc.");
-
+	// _context.Assets.Add(asset);
+	// _context.saveChanges();
 
 }

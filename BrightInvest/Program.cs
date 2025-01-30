@@ -1,4 +1,5 @@
 //using BrightInvest.Data;
+using System.Globalization;
 using BrightInvest.Infrastructure.DataBase;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -6,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+Console.WriteLine($"Loaded Connection String: {builder.Configuration.GetConnectionString("DefaultConnection")}");
 // Add services to the container, including DbContext
 builder.Services.AddDbContext<DataContext>(options =>
 	options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -15,6 +18,8 @@ builder.Services.AddRazorPages().AddRazorPagesOptions(options =>
 {
 	options.RootDirectory = "/Web";
 });
+
+builder.Services.AddControllers();
 //builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 //builder.Services.AddSingleton<WeatherForecastService>();
