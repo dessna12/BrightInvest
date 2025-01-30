@@ -5,13 +5,11 @@ using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace BrightInvest.Presentation.Controllers
 {
 	//[Route("/api")]
 	[ApiController]
-	public class AssetController : ControllerBase
+	public class AssetController : Controller
 	{
 
 		private readonly DataContext _context;
@@ -22,17 +20,26 @@ namespace BrightInvest.Presentation.Controllers
 		}
 
 
-		// GET: api/asset
+		// GET: api/asset/id
 		[HttpGet]
 		[Route("assets")]
-		public IEnumerable<Asset> Get()
+		public IActionResult GetAssets()
 		{
 			List<Asset> assets = _context.Assets.ToList();
 
-			return assets;
-
-			//return Json(assets);
+			return Json(assets);
 		}
+
+		// GET: api/asset
+		//[HttpGet]
+		//[Route("assets")]
+		//public IActionResult GetAssets()
+		//{
+		//	List<Asset> assets = _context.Assets.ToList();
+
+		//	return Json(assets);
+		//}
+
 
 	}
 }

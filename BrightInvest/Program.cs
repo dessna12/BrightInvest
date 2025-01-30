@@ -1,4 +1,3 @@
-//using BrightInvest.Data;
 using System.Globalization;
 using BrightInvest.Infrastructure.DataBase;
 using Microsoft.AspNetCore.Components;
@@ -21,8 +20,8 @@ builder.Services.AddRazorPages().AddRazorPagesOptions(options =>
 
 builder.Services.AddControllers(options =>
 {
-	// Apply global prefix convention for routing
-	options.Conventions.Add(new RoutePrefixConvention("api"));
+    // Apply global prefix convention for routing
+    options.Conventions.Add(new RoutePrefixConvention("api"));
 });
 
 builder.Services.AddServerSideBlazor();
