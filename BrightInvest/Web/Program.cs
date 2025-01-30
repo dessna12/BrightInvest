@@ -1,8 +1,14 @@
 //using BrightInvest.Data;
+using BrightInvest.Infrastructure.DataBase;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container, including DbContext
+builder.Services.AddDbContext<DataContext>(options =>
+	options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add services to the container.
 builder.Services.AddRazorPages().AddRazorPagesOptions(options =>
@@ -14,6 +20,13 @@ builder.Services.AddServerSideBlazor();
 //builder.Services.AddSingleton<WeatherForecastService>();
 
 var app = builder.Build();
+
+// Ensure the database is created
+using (var scope = app.Services.CreateScope())
+{
+	var dbContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+	dbContext.Database.EnsureCreated(); // Creates the database if it does not exist
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -30,6 +43,8 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.MapBlazorHub();
+app.MapControllers();
+
 app.MapFallbackToPage("/_Host", "/Web/_Host");
 
 app.Run();
