@@ -1,17 +1,24 @@
 ﻿@page "/portfolio"
 @using BrightInvest.Domain.Entities
+@using BrightInvest.Infrastructure.DataBase
+@using Microsoft.EntityFrameworkCore
 @inject NavigationManager Navigation
-
-
+@inject DataContext dataContext
 
 <PageTitle>Portfolio</PageTitle>
 
-<p> @asset.Name @asset.Ticker </p>
+<p> @asset?.Name @asset?.Ticker </p>
 
 @code {
+    private Asset asset;
 
-	Asset asset = new Asset("GOOGL", "Alphabet Inc.");
-	// _context.Assets.Add(asset);
-	// _context.saveChanges();
+    protected override async Task OnInitializedAsync()
+    {
+        // Create a new Asset instance
+        asset = new Asset("GOOGL", "Alphabet Inc.");
 
+        // Add the asset to the database context
+        //await dataContext.Assets.AddAsync(asset);
+        // await dataContext.SaveChangesAsync();
+    }
 }

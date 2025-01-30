@@ -9,9 +9,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BrightInvest.Presentation.Controllers
 {
-	[Route("api/")]
+	//[Route("/api")]
 	[ApiController]
-	public class AssetController : Controller
+	public class AssetController : ControllerBase
 	{
 
 		private readonly DataContext _context;
@@ -24,7 +24,7 @@ namespace BrightInvest.Presentation.Controllers
 
 		// GET: api/asset
 		[HttpGet]
-		[Route("/assets")]
+		[Route("assets")]
 		public IEnumerable<Asset> Get()
 		{
 			List<Asset> assets = _context.Assets.ToList();
