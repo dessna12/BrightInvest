@@ -21,7 +21,7 @@ public class AssetRepository : IAssetRepository
 		return await _context.Assets.ToListAsync();
 	}
 
-	public async Task<Asset> GetAssetAsync(Guid id) => _context.Assets.Find(id);
+	public async Task<Asset> GetAssetByIdAsync(Guid id) => _context.Assets.Find(id);
 
 	public async Task AddAssetAsync(Asset asset)
 	{
@@ -29,5 +29,6 @@ public class AssetRepository : IAssetRepository
 		await _context.SaveChangesAsync();
 	}
 
+	
 
 }

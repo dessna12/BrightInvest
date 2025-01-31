@@ -18,6 +18,12 @@ builder.Services.AddRazorPages().AddRazorPagesOptions(options =>
 });
 
 
+builder.Services.AddScoped(sp =>
+{
+	var nav = sp.GetRequiredService<NavigationManager>(); 
+	return new HttpClient { BaseAddress = new Uri(nav.BaseUri) }; 
+});
+
 builder.Services.AddControllers(options =>
 {
     // Apply global prefix convention for routing

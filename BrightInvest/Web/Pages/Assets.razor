@@ -1,0 +1,91 @@
+﻿@page "/assets"
+@using BrightInvest.Domain.Entities
+@using BrightInvest.Infrastructure.DataBase
+@using Microsoft.EntityFrameworkCore
+@inject NavigationManager Navigation
+@inject DataContext dataContext
+@inject HttpClient httpClient
+
+<PageTitle>Assets</PageTitle>
+
+<h3>Assets</h3>
+
+<h4>Add New Asset</h4>
+<input @bind="newAsset.Ticker" placeholder="Ticker" />
+<input @bind="newAsset.Name" placeholder="Name" />
+<button @onclick="AddAsset">Add Asset</button>
+
+
+@if (assets == null)
+{
+    <p>Loading...</p>
+}
+else if (!assets.Any())
+{
+    <p>No assets found.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Asset ID</th>
+                <th>Ticker</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var asset in assets)
+            {
+                <tr>
+                    <td>@asset.Id</td>
+                    <td>@asset.Ticker</td>
+                    <td>@asset.Name</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@* @code { *@
+@*     private Asset asset; *@
+
+@*     protected override async Task OnInitializedAsync() *@
+@*     { *@
+@*         // Create a new Asset instance *@
+@*         asset = new Asset("GOOGL", "Alphabet Inc."); *@
+
+@*         // Add the asset to the database context *@
+@*         //await dataContext.Assets.AddAsync(asset); *@
+@*         // await dataContext.SaveChangesAsync(); *@
+@*     } *@
+@* } *@
+
+
+@code {
+    
+    //TO DO : Factorize in A clean Architecture
+    private List<Asset> assets = new();
+    private Asset newAsset = new Asset("", "");
+
+    protected override async Task OnInitializedAsync()
+    {
+        assets = await httpClient.GetFromJsonAsync<List<Asset>>("api/assets");
+    }
+
+    protected async Task AddAsset() {
+        var response = await httpClient.PostAsJsonAsync("api/asset", newAsset); // ✅ Send to API without ID
+
+        if (response.IsSuccessStatusCode)
+        {
+            var createdAsset = await response.Content.ReadFromJsonAsync<Asset>(); // ✅ Retrieve saved asset with ID
+            assets.Add(createdAsset); // Update UI with backend-generated ID
+            newAsset = new Asset("", "");  
+        }
+        else
+        {
+            Console.WriteLine("Failed to add asset");
+        }
+    }
+
+}
