@@ -10,10 +10,10 @@
 
 <h3>Assets</h3>
 
-<h4>Add New Asset</h4>
-<input @bind="newAsset.Ticker" placeholder="Ticker" />
-<input @bind="newAsset.Name" placeholder="Name" />
-<button @onclick="AddAsset">Add Asset</button>
+@* <h4>Add New Asset</h4> *@
+@* <input @bind="newAsset.Ticker" placeholder="Ticker" /> *@
+@* <input @bind="newAsset.Name" placeholder="Name" /> *@
+@* <button @onclick="AddAsset">Add Asset</button> *@
 
 
 @if (assets == null)
@@ -26,12 +26,13 @@ else if (!assets.Any())
 }
 else
 {
-    <table class="table">
+    <table>
         <thead>
             <tr>
                 <th>Asset ID</th>
                 <th>Ticker</th>
                 <th>Name</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -41,6 +42,9 @@ else
                     <td>@asset.Id</td>
                     <td>@asset.Ticker</td>
                     <td>@asset.Name</td>
+                    @* <td> *@
+                    @*     <button @onclick="() => DeleteAsset(asset.Id)">Delete</button> *@
+                    @* </td> *@
                 </tr>
             }
         </tbody>
@@ -63,29 +67,47 @@ else
 
 
 @code {
-    
-    //TO DO : Factorize in A clean Architecture
-    private List<Asset> assets = new();
-    private Asset newAsset = new Asset("", "");
+
+    //TO DO : Factorize in a clean Architecture
+    private List<AssetDto> assets = new();
+    // private AssetDto newAsset = new AssetDto("", "");
 
     protected override async Task OnInitializedAsync()
     {
-        assets = await httpClient.GetFromJsonAsync<List<Asset>>("api/assets");
+        assets = await httpClient.GetFromJsonAsync<List<AssetDto>>("api/assets");
     }
 
-    protected async Task AddAsset() {
-        var response = await httpClient.PostAsJsonAsync("api/asset", newAsset); // ✅ Send to API without ID
+    // protected async Task AddAsset() {
+    //     var response = await httpClient.PostAsJsonAsync("api/assets", newAsset); ✅ Send to API without ID
 
-        if (response.IsSuccessStatusCode)
-        {
-            var createdAsset = await response.Content.ReadFromJsonAsync<Asset>(); // ✅ Retrieve saved asset with ID
-            assets.Add(createdAsset); // Update UI with backend-generated ID
-            newAsset = new Asset("", "");  
-        }
-        else
-        {
-            Console.WriteLine("Failed to add asset");
-        }
+    //     if (response.IsSuccessStatusCode)
+    //     {
+    //         var createdAsset = await response.Content.ReadFromJsonAsync<AssetDto>(); ✅ Retrieve saved asset with ID
+    //         assets.Add(createdAsset); Update UI with backend-generated ID
+    //         newAsset = new AssetDto("", "");  
+    //     }
+    //     else
+    //     {
+    //         Console.WriteLine("Failed to add asset");
+    //     }
+    // }
+
+    // protected async Task DeleteAsset(Guid assetId) {
+    //     var response = await httpClient.DeleteAsync($"api/assets/{assetId}");
+
+    //     if (response.IsSuccessStatusCode)
+    //     {
+    //         assets.RemoveAll(a => a.Id == assetId); Remove from UI
+    //         StateHasChanged(); Refresh the UI
+    //     }
+    //     else
+    //     {
+    //         Console.WriteLine("Failed to delete asset");
+    //     }
+
+
+
+
     }
 
 }

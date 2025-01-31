@@ -1,6 +1,7 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
+using BrightInvest.Application.Services;
 using BrightInvest.Domain.Entities;
-using BrightInvest.Infrastructure.DataBase;
 using BrightInvest.Web.Pages;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc;
@@ -8,55 +9,71 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BrightInvest.Presentation.Controllers
 {
-	//[Route("/api")]
+	[Route("assets")]
 	[ApiController]
 	public class AssetController : Controller
 	{
 
-		private readonly DataContext _context;
+		private readonly IAssetService _assetService;
 
-		public AssetController(DataContext context)
+		public AssetController(IAssetService assetService)
 		{
-			_context = context;
+			_assetService = assetService ?? throw new ArgumentNullException(nameof(assetService));
 		}
 
 
-		// GET: api/asset/
+		// GET: api/assets/
 		[HttpGet]
-		[Route("assets")]
-		public IActionResult GetAssets()
+		public async Task<IActionResult> GetAssets()
 		{
-			List<Asset> assets = _context.Assets.ToList();
+			var assets = await _assetService.GetAssetsAsync();
 
-			return Json(assets);
+			return Ok(assets);
 		}
 
-		// GET: api/asset
-		[HttpGet("{id}")]
-		public async Task<ActionResult<Asset>> GetAsset(Guid id)
-		{
-			var asset = await _context.Assets.FindAsync(id);
-			if (asset == null)
-			{
-				return NotFound();
-			}
-			return asset;
-		}
+		//// GET: api/assets/id
+		//[HttpGet("{id}")]
+		//public async Task<ActionResult<Asset>> GetAsset(Guid id)
+		//{
+		//	var asset = await _context.Assets.FindAsync(id);
+		//	if (asset == null)
+		//	{
+		//		return NotFound();
+		//	}
+		//	return asset;
+		//}
 
-		//POST: api/asset
-		[HttpPost]
-		[Route("asset")]
-		public async Task<ActionResult<Asset>> PostAsset([FromBody] Asset asset) {
-			if (asset == null)
-			{
-				return BadRequest("Invalid asset data");
-			}
+		////POST: api/assets
+		//[HttpPost]
+		//public async Task<ActionResult<Asset>> PostAsset([FromBody] Asset asset) {
+		//	if (asset == null)
+		//	{
+		//		return BadRequest("Invalid asset data");
+		//	}
 
-			_context.Assets.Add(asset);
-			await _context.SaveChangesAsync();
+		//	_context.Assets.Add(asset);
+		//	await _context.SaveChangesAsync();
 
-			return Ok(asset);
-		}
+		//	return Ok(asset);
+		//}
+
+		////DELETE: api/assets/id
+		//[HttpDelete("{id}")]
+		//public async Task<IActionResult> DeleteAsset(Guid id)
+		//{
+		//	var asset = await _context.Assets.FindAsync(id);
+		//	if (asset == null)
+		//	{
+		//		return NotFound($"Asset with ID {id} not found");
+		//	}
+
+		//	_context.Assets.Remove(asset);
+		//	await _context.SaveChangesAsync();
+
+		//	return NoContent(); // 204 No Content is the standard response for DELETE
+		//}
+
+
 
 
 

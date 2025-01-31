@@ -5,9 +5,9 @@ namespace BrightInvest.Domain.Interfaces;
 
 public interface IAssetRepository
 {
-	//Task<IEnumerable<Asset>> GetAllAssetsAsync();
-	//Task<Asset> GetAssetByIdAsync(int id);
-	//Task AddAssetAsync(Asset asset);
+	Task<IEnumerable<Asset>> GetAllAssetsAsync();
+	Task<Asset> GetAssetByIdAsync(Guid id);
+	Task AddAssetAsync(Asset asset);
 }
 
 

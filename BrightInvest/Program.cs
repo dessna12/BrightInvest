@@ -1,5 +1,8 @@
 using System.Globalization;
+using BrightInvest.Application.Services;
+using BrightInvest.Domain.Interfaces;
 using BrightInvest.Infrastructure.DataBase;
+using BrightInvest.Infrastructure.Repository;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +26,9 @@ builder.Services.AddScoped(sp =>
 	var nav = sp.GetRequiredService<NavigationManager>(); 
 	return new HttpClient { BaseAddress = new Uri(nav.BaseUri) }; 
 });
+
+builder.Services.AddScoped<IAssetService, AssetService>();
+builder.Services.AddScoped<IAssetRepository, AssetRepository>();
 
 builder.Services.AddControllers(options =>
 {
