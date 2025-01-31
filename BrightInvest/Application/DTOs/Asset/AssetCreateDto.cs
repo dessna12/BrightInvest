@@ -1,7 +1,8 @@
-public record AssetCreateDto
+public class AssetCreateDto
 {
-	public string Ticker { get; init; }
-	public string Name { get; init; }
+	public string Ticker { get; set; }
+	public string Name { get; set; }
+
 
 	public AssetCreateDto(string ticker, string name)
 	{

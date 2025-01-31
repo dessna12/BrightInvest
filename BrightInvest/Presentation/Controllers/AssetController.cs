@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 using BrightInvest.Application.Services;
-using BrightInvest.Domain.Entities;
-using BrightInvest.Web.Pages;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -27,51 +25,49 @@ namespace BrightInvest.Presentation.Controllers
 		public async Task<IActionResult> GetAssets()
 		{
 			var assets = await _assetService.GetAssetsAsync();
-
 			return Ok(assets);
 		}
 
-		//// GET: api/assets/id
-		//[HttpGet("{id}")]
-		//public async Task<ActionResult<Asset>> GetAsset(Guid id)
-		//{
-		//	var asset = await _context.Assets.FindAsync(id);
-		//	if (asset == null)
-		//	{
-		//		return NotFound();
-		//	}
-		//	return asset;
-		//}
+		// GET: api/assets/id
+		[HttpGet("{id}")]
+		public async Task<ActionResult<AssetDto>> GetAsset(Guid id)
+		{
+			var asset = await _assetService.GetAssetByIdAsync(id);
+			if (asset == null)
+			{
+				return NotFound();
+			}
+			return Ok(asset);
+		}
 
-		////POST: api/assets
-		//[HttpPost]
-		//public async Task<ActionResult<Asset>> PostAsset([FromBody] Asset asset) {
-		//	if (asset == null)
-		//	{
-		//		return BadRequest("Invalid asset data");
-		//	}
+		//POST: api/assets
+		[HttpPost]
+		public async Task<ActionResult<AssetDto>> PostAsset([FromBody] AssetCreateDto asset)
+		{
+			if (asset == null)
+			{
+				return BadRequest("Invalid asset data");
+			}
 
-		//	_context.Assets.Add(asset);
-		//	await _context.SaveChangesAsync();
+			await _assetService.CreateAssetAsync(asset);
+			return Ok(asset);
+		}
 
-		//	return Ok(asset);
-		//}
+		//DELETE: api/assets/id
+		[HttpDelete("{id}")]
+		public async Task<IActionResult> DeleteAsset(Guid id)
+		{
+			bool response = await _assetService.DeleteAssetAsync(id);
 
-		////DELETE: api/assets/id
-		//[HttpDelete("{id}")]
-		//public async Task<IActionResult> DeleteAsset(Guid id)
-		//{
-		//	var asset = await _context.Assets.FindAsync(id);
-		//	if (asset == null)
-		//	{
-		//		return NotFound($"Asset with ID {id} not found");
-		//	}
-
-		//	_context.Assets.Remove(asset);
-		//	await _context.SaveChangesAsync();
-
-		//	return NoContent(); // 204 No Content is the standard response for DELETE
-		//}
+			if (response)
+			{
+				return NoContent();
+			}
+			else
+			{
+				return NotFound(); 
+			}
+		}
 
 
 

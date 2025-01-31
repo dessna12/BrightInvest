@@ -34,4 +34,9 @@ public class AssetService : IAssetService
 
 		return new AssetDto(asset.Id, asset.Ticker, asset.Name);
 	}
+
+	public async Task<bool> DeleteAssetAsync(Guid id)
+	{
+		return await _assetRepository.DeleteAssetAsync(id);
+	}
 }
