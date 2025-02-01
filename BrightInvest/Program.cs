@@ -55,6 +55,7 @@ using (var scope = app.Services.CreateScope())
 {
 	var dbContext = scope.ServiceProvider.GetRequiredService<DataContext>();
 	dbContext.Database.EnsureCreated(); // Creates the database if it does not exist
+	//dbContext.Database.Migrate();
 }
 
 // Configure the HTTP request pipeline.
