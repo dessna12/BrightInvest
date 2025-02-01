@@ -1,42 +1,36 @@
 using BrightInvest.Application.Services;
+using BrightInvest.Application.UseCases.Assets;
 using BrightInvest.Domain.Entities;
 using BrightInvest.Domain.Interfaces;
 
 public class AssetService : IAssetService
 {
-	private readonly IAssetRepository _assetRepository;
+	private readonly IAssetUseCase _assetUseCase;
 
 	//TODO: Use AutoMapper to avoid writing all the properties 
-	public AssetService(IAssetRepository assetRepository)
+	public AssetService(IAssetUseCase assetUseCase)
 	{
-		_assetRepository = assetRepository;
+		_assetUseCase = assetUseCase;
 	}
 
-	public async Task<IEnumerable<AssetDto>> GetAssetsAsync()
+	public async Task<IEnumerable<AssetDto>> GetAllAssetsAsync()
 	{
-		var assets = await _assetRepository.GetAllAssetsAsync();
-		return assets.Select(asset => new AssetDto(asset.Id, asset.Ticker, asset.Name));
+		var assets = await _assetUseCase.GetAllAssetsAsync();
+		return assets;
 	}
 
 	public async Task<AssetDto> GetAssetByIdAsync(Guid id)
 	{
-		var asset = await _assetRepository.GetAssetByIdAsync(id);
-		if (asset == null)
-			return null;
-
-		return new AssetDto(asset.Id, asset.Ticker, asset.Name);
+		return await _assetUseCase.GetAssetByIdAsync(id);
 	}
 
 	public async Task<AssetDto> CreateAssetAsync(AssetCreateDto assetCreateDto)
 	{
-		var asset = new Asset(assetCreateDto.Ticker, assetCreateDto.Name);
-		await _assetRepository.AddAssetAsync(asset);
-
-		return new AssetDto(asset.Id, asset.Ticker, asset.Name);
+		return await _assetUseCase.CreateAssetAsync(assetCreateDto);
 	}
 
 	public async Task<bool> DeleteAssetAsync(Guid id)
 	{
-		return await _assetRepository.DeleteAssetAsync(id);
+		return await _assetUseCase.DeleteAssetAsync(id);
 	}
 }

@@ -2,7 +2,7 @@
 {
 	public interface IAssetService
 	{
-		Task<IEnumerable<AssetDto>> GetAssetsAsync();
+		Task<IEnumerable<AssetDto>> GetAllAssetsAsync();
 		Task<AssetDto?> GetAssetByIdAsync(Guid id);
 		Task<AssetDto> CreateAssetAsync(AssetCreateDto assetDto);
 		Task<bool> DeleteAssetAsync(Guid id);

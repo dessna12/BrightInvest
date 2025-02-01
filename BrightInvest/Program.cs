@@ -1,5 +1,6 @@
 using System.Globalization;
 using BrightInvest.Application.Services;
+using BrightInvest.Application.UseCases.Assets;
 using BrightInvest.Domain.Interfaces;
 using BrightInvest.Infrastructure.DataBase;
 using BrightInvest.Infrastructure.Repository;
@@ -29,6 +30,7 @@ builder.Services.AddScoped(sp =>
 
 builder.Services.AddScoped<IAssetService, AssetService>();
 builder.Services.AddScoped<IAssetRepository, AssetRepository>();
+builder.Services.AddScoped<IAssetUseCase, AssetUseCase>();
 
 builder.Services.AddControllers(options =>
 {

@@ -19,12 +19,11 @@ namespace BrightInvest.Presentation.Controllers
 			_assetService = assetService ?? throw new ArgumentNullException(nameof(assetService));
 		}
 
-
 		// GET: api/assets/
 		[HttpGet]
 		public async Task<IActionResult> GetAssets()
 		{
-			var assets = await _assetService.GetAssetsAsync();
+			var assets = await _assetService.GetAllAssetsAsync();
 			return Ok(assets);
 		}
 
@@ -68,10 +67,6 @@ namespace BrightInvest.Presentation.Controllers
 				return NotFound(); 
 			}
 		}
-
-
-
-
 
 	}
 }
