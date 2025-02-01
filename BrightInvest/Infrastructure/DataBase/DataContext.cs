@@ -2,6 +2,7 @@ namespace BrightInvest.Infrastructure.DataBase
 {
 	using Microsoft.EntityFrameworkCore;
 	using BrightInvest.Domain.Entities;
+	using System;
 
 	public class DataContext : DbContext
 	{
@@ -9,7 +10,16 @@ namespace BrightInvest.Infrastructure.DataBase
 			: base(options)
 		{
 		}
-
 		public DbSet<Asset> Assets { get; set; }
+		public DbSet<AssetPrice> AssetPrices { get; set; }
+
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			modelBuilder.Entity<AssetPrice>()
+				.HasOne(ap => ap.Asset)
+				.WithMany(a => a.Prices)
+				.HasForeignKey(ap => ap.AssetId);
+		}
+
 	}
 }

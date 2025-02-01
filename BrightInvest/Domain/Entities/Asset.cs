@@ -8,6 +8,7 @@ public class Asset : Entity
 {
 	public string Ticker {  get; set; }
 	public string Name { get; set; }
+	public List<AssetPrice> Prices { get; private set; } = new();
 
 
 	[JsonConstructor]

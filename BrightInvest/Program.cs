@@ -1,8 +1,11 @@
 using System.Globalization;
 using BrightInvest.Application.Services;
+using BrightInvest.Application.Services.AssetPrice;
+using BrightInvest.Application.UseCases.AssetPrices;
 using BrightInvest.Application.UseCases.Assets;
 using BrightInvest.Domain.Interfaces;
 using BrightInvest.Infrastructure.DataBase;
+using BrightInvest.Infrastructure.Repositories;
 using BrightInvest.Infrastructure.Repository;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -31,6 +34,10 @@ builder.Services.AddScoped(sp =>
 builder.Services.AddScoped<IAssetService, AssetService>();
 builder.Services.AddScoped<IAssetRepository, AssetRepository>();
 builder.Services.AddScoped<IAssetUseCase, AssetUseCase>();
+
+builder.Services.AddScoped<IAssetPriceService, AssetPriceService>();
+builder.Services.AddScoped<IAssetPriceRepository, AssetPriceRepository>();
+builder.Services.AddScoped<IAssetPriceUseCase, AssetPriceUseCase>();
 
 builder.Services.AddControllers(options =>
 {
