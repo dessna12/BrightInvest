@@ -1,4 +1,5 @@
 using System.Globalization;
+using BrightInvest.Application.Services.AlphaVantage;
 using BrightInvest.Application.UseCases.AssetPrices;
 using BrightInvest.Application.UseCases.Assets;
 using BrightInvest.Application.UseCases.Interfaces;
@@ -6,6 +7,7 @@ using BrightInvest.Domain.Interfaces;
 using BrightInvest.Infrastructure.DataBase;
 using BrightInvest.Infrastructure.Repositories;
 using BrightInvest.Infrastructure.Repository;
+using BrightInvest.Web.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
@@ -24,11 +26,7 @@ builder.Services.AddRazorPages().AddRazorPagesOptions(options =>
 });
 
 
-builder.Services.AddScoped(sp =>
-{
-	var nav = sp.GetRequiredService<NavigationManager>(); 
-	return new HttpClient { BaseAddress = new Uri(nav.BaseUri) }; 
-});
+builder.Services.AddScoped<CustomHttpClientService>();
 
 //builder.Services.AddScoped<BrightInvest.Application.Services.Asset.IAssetUseCase, AssetService>();
 builder.Services.AddScoped<IAssetRepository, AssetRepository>();
@@ -37,6 +35,8 @@ builder.Services.AddScoped<IAssetUseCase, AssetUseCase>();
 //builder.Services.AddScoped<IAssetPriceService, AssetPriceService>();
 builder.Services.AddScoped<IAssetPriceRepository, AssetPriceRepository>();
 builder.Services.AddScoped<IAssetPriceUseCase, AssetPriceUseCase>();
+
+builder.Services.AddScoped<IAlphaVantageService, AlphaVantageService>();
 
 builder.Services.AddControllers(options =>
 {

@@ -20,6 +20,18 @@ namespace BrightInvest.Infrastructure.Repositories
 			return await _context.AssetPrices.ToListAsync();
 		}
 
+		public async Task<IEnumerable<AssetPrice>> GetAllAssetPricesBySymbolAsync(string symbol)
+		{
+			return await _context.AssetPrices
+			.Where(ap => ap.Asset.Ticker == symbol)
+			.Include(ap => ap.Asset)
+			.ToListAsync();
+		}
+		public async Task<IEnumerable<AssetPrice>> GetAllAssetPricesByAssetIdAsync(Guid assetId)
+		{
+			return await _context.AssetPrices.Where(ap => ap.AssetId == assetId).ToListAsync();
+		}
+
 		public async Task<AssetPrice> GetAssetPriceByIdAsync(Guid id)
 		{
 			AssetPrice assetPrice = await _context.AssetPrices.FindAsync(id);
@@ -30,9 +42,12 @@ namespace BrightInvest.Infrastructure.Repositories
 			return assetPrice;
 		}
 
-		public async Task<IEnumerable<AssetPrice?>> GetAllAssetPricesByAssetIdAsync(Guid assetId)
+		public async Task<AssetPrice?> GetLatestPriceByAssetIdAsync(Guid assetId)
 		{
-			return await _context.AssetPrices.Where(ap => ap.AssetId == assetId).ToListAsync();
+			return await _context.AssetPrices
+				.Where(ap => ap.AssetId == assetId)
+				.OrderByDescending(ap => ap.Date)
+				.LastOrDefaultAsync();
 		}
 
 		public async Task AddAssetPriceAsync(AssetPrice assetPrice)
@@ -80,6 +95,8 @@ namespace BrightInvest.Infrastructure.Repositories
 				return false;
 			}
 		}
+
+
 	}
 
 }

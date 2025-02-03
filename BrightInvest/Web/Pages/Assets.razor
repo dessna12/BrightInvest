@@ -1,10 +1,10 @@
 ﻿@page "/assets"
 @using BrightInvest.Domain.Entities
 @using BrightInvest.Infrastructure.DataBase
+@using BrightInvest.Web.Services
 @using Microsoft.EntityFrameworkCore
 @inject NavigationManager Navigation
-@inject DataContext dataContext
-@inject HttpClient httpClient
+@inject CustomHttpClientService CustomHttpClientService
 
 <PageTitle>Assets</PageTitle>
 
@@ -62,10 +62,12 @@ else
     }
 
     protected async Task GetAssets() {
+        var httpClient = CustomHttpClientService.GetHttpClient();
         assets = await httpClient.GetFromJsonAsync<List<AssetDto>>("api/assets");
     }
 
     protected async Task AddAsset() {
+        var httpClient = CustomHttpClientService.GetHttpClient();
         var response = await httpClient.PostAsJsonAsync("api/assets", newAsset); 
 
         if (response.IsSuccessStatusCode)
@@ -81,6 +83,7 @@ else
     }
 
     protected async Task DeleteAsset(Guid assetId) {
+        var httpClient = CustomHttpClientService.GetHttpClient();
         var response = await httpClient.DeleteAsync($"api/assets/{assetId}");
 
         if (response.IsSuccessStatusCode)

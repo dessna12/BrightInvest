@@ -13,7 +13,7 @@ namespace BrightInvest.Application.DTOs.AlphaVantage
 	public class TimeSeriesData
 	{
 		[JsonPropertyName("4. close")]
-		public decimal ClosePrice { get; set; }
+		public string ClosePrice { get; set; }
 	}
 
 	public class StockDataDto

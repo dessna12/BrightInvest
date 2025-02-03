@@ -42,6 +42,19 @@ namespace BrightInvest.Presentation.Controllers
 			return Ok(assetPrice);
 		}
 
+		// GET: api/asset-prices/ticker/symbol
+		[HttpGet("ticker/{symbol}")]
+		public async Task<ActionResult<AssetPriceDto>> GetAllAssetPricesBySymbolAsync(string symbol)
+		{
+			var assetPrices = await _assetPriceUseCase.GetAllAssetPricesBySymbolAsync(symbol);
+			if (assetPrices == null || !assetPrices.Any())
+			{
+				return NotFound();
+			}
+			return Ok(assetPrices);
+		}
+
+
 		//POST: api/asset-prices
 		[HttpPost]
 		public async Task<ActionResult<AssetPriceDto>> PostAssetPrice([FromBody] AssetPriceCreateDto assetPrice)
