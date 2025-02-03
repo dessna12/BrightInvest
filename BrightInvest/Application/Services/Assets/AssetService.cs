@@ -1,5 +1,5 @@
-using BrightInvest.Application.Services;
-using BrightInvest.Application.UseCases.Assets;
+using BrightInvest.Application.Services.Assets;
+using BrightInvest.Application.UseCases.Interfaces;
 using BrightInvest.Domain.Entities;
 using BrightInvest.Domain.Interfaces;
 

@@ -41,6 +41,12 @@ namespace BrightInvest.Infrastructure.Repositories
 			await _context.SaveChangesAsync();
 		}
 
+		public async Task AddAssetPricesAsync(List<AssetPrice> assetPrices)
+		{
+			await _context.AssetPrices.AddRangeAsync(assetPrices);
+			await _context.SaveChangesAsync();
+		}
+
 		public async Task<bool> DeleteAssetPriceAsync(Guid id)
 		{
 			try

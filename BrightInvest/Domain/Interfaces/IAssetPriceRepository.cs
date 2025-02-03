@@ -9,6 +9,7 @@ public interface IAssetPriceRepository
 	Task<AssetPrice> GetAssetPriceByIdAsync(Guid id);
 	Task<IEnumerable<AssetPrice?>> GetAllAssetPricesByAssetIdAsync(Guid id);
 	Task AddAssetPriceAsync(AssetPrice assetPrice);
+	Task AddAssetPricesAsync(List<AssetPrice> assetPrices);
 	Task<bool> DeleteAssetPriceAsync(Guid id);
 	Task<bool> DeleteAllAssetPricesByAssetIdAsync(Guid assetId);
 }

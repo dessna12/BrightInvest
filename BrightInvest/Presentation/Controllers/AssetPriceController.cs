@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Net;
-using BrightInvest.Application.DTOs.AssetPrice;
+using BrightInvest.Application.DTOs.AssetPrices;
 using BrightInvest.Application.Services;
-using BrightInvest.Application.Services.AssetPrice;
+using BrightInvest.Application.Services.AssetPrices;
+using BrightInvest.Application.UseCases.Interfaces;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,18 +15,18 @@ namespace BrightInvest.Presentation.Controllers
 	public class AssetPriceController : Controller
 	{
 
-		private readonly IAssetPriceService _assetPriceService;
+		private readonly IAssetPriceUseCase _assetPriceUseCase;
 
-		public AssetPriceController(IAssetPriceService assetPriceService)
+		public AssetPriceController(IAssetPriceUseCase assetPriceUseCase)
 		{
-			_assetPriceService = assetPriceService ?? throw new ArgumentNullException(nameof(assetPriceService));
+			_assetPriceUseCase = assetPriceUseCase ?? throw new ArgumentNullException(nameof(assetPriceUseCase));
 		}
 
 		// GET: api/asset-prices/
 		[HttpGet]
 		public async Task<IActionResult> GetAssets()
 		{
-			var assetPrices = await _assetPriceService.GetAllAssetPricesAsync();
+			var assetPrices = await _assetPriceUseCase.GetAllAssetPricesAsync();
 			return Ok(assetPrices);
 		}
 
@@ -33,7 +34,7 @@ namespace BrightInvest.Presentation.Controllers
 		[HttpGet("{id}")]
 		public async Task<ActionResult<AssetPriceDto>> GetAssetPrice(Guid id)
 		{
-			var assetPrice = await _assetPriceService.GetAssetPriceByIdAsync(id);
+			var assetPrice = await _assetPriceUseCase.GetAssetPriceByIdAsync(id);
 			if (assetPrice == null)
 			{
 				return NotFound();
@@ -50,7 +51,7 @@ namespace BrightInvest.Presentation.Controllers
 				return BadRequest("Invalid asset data");
 			}
 
-			await _assetPriceService.CreateAssetPriceAsync(assetPrice);
+			await _assetPriceUseCase.CreateAssetPriceAsync(assetPrice);
 			return Ok(assetPrice);
 		}
 
@@ -58,7 +59,7 @@ namespace BrightInvest.Presentation.Controllers
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> DeleteAsset(Guid id)
 		{
-			bool response = await _assetPriceService.DeleteAssetPriceAsync(id);
+			bool response = await _assetPriceUseCase.DeleteAssetPriceAsync(id);
 
 			if (response)
 			{

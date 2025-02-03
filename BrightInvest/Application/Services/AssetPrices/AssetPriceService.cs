@@ -1,7 +1,7 @@
-﻿using BrightInvest.Application.DTOs.AssetPrice;
-using BrightInvest.Application.UseCases.AssetPrices;
+﻿using BrightInvest.Application.DTOs.AssetPrices;
+using BrightInvest.Application.UseCases.Interfaces;
 
-namespace BrightInvest.Application.Services.AssetPrice
+namespace BrightInvest.Application.Services.AssetPrices
 {
 	public class AssetPriceService : IAssetPriceService
 	{

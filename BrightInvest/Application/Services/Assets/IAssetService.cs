@@ -1,4 +1,4 @@
-﻿namespace BrightInvest.Application.Services
+﻿namespace BrightInvest.Application.Services.Assets
 {
 	public interface IAssetService
 	{

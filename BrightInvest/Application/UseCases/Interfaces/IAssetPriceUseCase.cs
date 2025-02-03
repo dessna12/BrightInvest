@@ -1,6 +1,6 @@
-﻿using BrightInvest.Application.DTOs.AssetPrice;
+﻿using BrightInvest.Application.DTOs.AssetPrices;
 
-namespace BrightInvest.Application.UseCases.AssetPrices
+namespace BrightInvest.Application.UseCases.Interfaces
 {
 	public interface IAssetPriceUseCase
 	{

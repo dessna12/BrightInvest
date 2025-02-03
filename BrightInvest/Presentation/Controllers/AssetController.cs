@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net;
-using BrightInvest.Application.Services;
+using BrightInvest.Application.Services.Assets;
+using BrightInvest.Application.UseCases.Interfaces;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,18 +13,18 @@ namespace BrightInvest.Presentation.Controllers
 	public class AssetController : Controller
 	{
 
-		private readonly IAssetService _assetService;
+		private readonly IAssetUseCase _assetUseCase;
 
-		public AssetController(IAssetService assetService)
+		public AssetController(IAssetUseCase assetUseCase)
 		{
-			_assetService = assetService ?? throw new ArgumentNullException(nameof(assetService));
+			_assetUseCase = assetUseCase ?? throw new ArgumentNullException(nameof(assetUseCase));
 		}
 
 		// GET: api/assets/
 		[HttpGet]
 		public async Task<IActionResult> GetAssets()
 		{
-			var assets = await _assetService.GetAllAssetsAsync();
+			var assets = await _assetUseCase.GetAllAssetsAsync();
 			return Ok(assets);
 		}
 
@@ -31,7 +32,7 @@ namespace BrightInvest.Presentation.Controllers
 		[HttpGet("{id}")]
 		public async Task<ActionResult<AssetDto>> GetAsset(Guid id)
 		{
-			var asset = await _assetService.GetAssetByIdAsync(id);
+			var asset = await _assetUseCase.GetAssetByIdAsync(id);
 			if (asset == null)
 			{
 				return NotFound();
@@ -48,7 +49,7 @@ namespace BrightInvest.Presentation.Controllers
 				return BadRequest("Invalid asset data");
 			}
 
-			await _assetService.CreateAssetAsync(asset);
+			await _assetUseCase.CreateAssetAsync(asset);
 			return Ok(asset);
 		}
 
@@ -56,7 +57,7 @@ namespace BrightInvest.Presentation.Controllers
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> DeleteAsset(Guid id)
 		{
-			bool response = await _assetService.DeleteAssetAsync(id);
+			bool response = await _assetUseCase.DeleteAssetAsync(id);
 
 			if (response)
 			{

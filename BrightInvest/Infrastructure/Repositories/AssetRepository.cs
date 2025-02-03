@@ -31,6 +31,16 @@ public class AssetRepository : IAssetRepository
 		return asset;
 	}
 
+	public async Task<Asset> GetAssetBySymbolAsync(string symbol)
+	{
+		Asset asset = await _context.Assets.Where(a => a.Ticker == symbol).FirstOrDefaultAsync(); ;
+		if (asset == null)
+		{
+			throw new KeyNotFoundException($"Asset with symbol {symbol} not found.");
+		}
+		return asset;
+	}
+
 	public async Task AddAssetAsync(Asset asset)
 	{
 		await _context.Assets.AddAsync(asset);

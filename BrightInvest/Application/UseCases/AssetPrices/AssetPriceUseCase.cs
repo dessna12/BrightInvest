@@ -1,4 +1,5 @@
-﻿using BrightInvest.Application.DTOs.AssetPrice;
+﻿using BrightInvest.Application.DTOs.AssetPrices;
+using BrightInvest.Application.UseCases.Interfaces;
 using BrightInvest.Domain.Entities;
 using BrightInvest.Domain.Interfaces;
 using BrightInvest.Infrastructure.Repository;
@@ -18,7 +19,7 @@ namespace BrightInvest.Application.UseCases.AssetPrices
 		public async Task<IEnumerable<AssetPriceDto>> GetAllAssetPricesAsync()
 		{
 			var assetPrices = await _assetPriceRepository.GetAllAssetPricesAsync();
-			return assetPrices.Select(assetPrice => new AssetPriceDto(assetPrice.Id, assetPrice.AssetId, assetPrice.Date, assetPrice.ClosePrice));
+			return assetPrices.Select(assetPrice => new AssetPriceDto(assetPrice.Id, assetPrice.AssetId, assetPrice.Date, assetPrice.ClosePrice)).ToList();
 		}
 
 		public async Task<AssetPriceDto> GetAssetPriceByIdAsync(Guid id)

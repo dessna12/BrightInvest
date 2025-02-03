@@ -1,8 +1,7 @@
 using System.Globalization;
-using BrightInvest.Application.Services;
-using BrightInvest.Application.Services.AssetPrice;
 using BrightInvest.Application.UseCases.AssetPrices;
 using BrightInvest.Application.UseCases.Assets;
+using BrightInvest.Application.UseCases.Interfaces;
 using BrightInvest.Domain.Interfaces;
 using BrightInvest.Infrastructure.DataBase;
 using BrightInvest.Infrastructure.Repositories;
@@ -31,11 +30,11 @@ builder.Services.AddScoped(sp =>
 	return new HttpClient { BaseAddress = new Uri(nav.BaseUri) }; 
 });
 
-builder.Services.AddScoped<IAssetService, AssetService>();
+//builder.Services.AddScoped<BrightInvest.Application.Services.Asset.IAssetUseCase, AssetService>();
 builder.Services.AddScoped<IAssetRepository, AssetRepository>();
 builder.Services.AddScoped<IAssetUseCase, AssetUseCase>();
 
-builder.Services.AddScoped<IAssetPriceService, AssetPriceService>();
+//builder.Services.AddScoped<IAssetPriceService, AssetPriceService>();
 builder.Services.AddScoped<IAssetPriceRepository, AssetPriceRepository>();
 builder.Services.AddScoped<IAssetPriceUseCase, AssetPriceUseCase>();
 

@@ -7,6 +7,7 @@ public interface IAssetRepository
 {
 	Task<IEnumerable<Asset>> GetAllAssetsAsync();
 	Task<Asset> GetAssetByIdAsync(Guid id);
+	Task<Asset> GetAssetBySymbolAsync(string symbol);
 	Task AddAssetAsync(Asset asset);
 	Task<bool> DeleteAssetAsync(Guid id);	
 }

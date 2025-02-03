@@ -1,5 +1,6 @@
 ﻿using BrightInvest.Domain.Interfaces;
 using BrightInvest.Domain.Entities;
+using BrightInvest.Application.UseCases.Interfaces;
 
 namespace BrightInvest.Application.UseCases.Assets
 {

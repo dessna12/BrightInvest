@@ -1,6 +1,6 @@
 ﻿using BrightInvest.Domain.Entities;
 
-namespace BrightInvest.Application.UseCases.Assets
+namespace BrightInvest.Application.UseCases.Interfaces
 {
 	public interface IAssetUseCase
 	{
