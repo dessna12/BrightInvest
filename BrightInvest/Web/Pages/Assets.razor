@@ -7,10 +7,9 @@
 @using Microsoft.EntityFrameworkCore
 @inject NavigationManager Navigation
 @inject CustomHttpClientService CustomHttpClientService
+@inject ISnackbar Snackbar
 
 <PageTitle>Assets</PageTitle>
-
-
 
     <MudText Typo="Typo.h2">Assets</MudText>
 
@@ -18,10 +17,10 @@
 
     <MudGrid>
         <MudItem xs="12" sm="4">
-            <MudTextField Label="Ticker" @bind-Value="newAsset.Ticker" />
+            <MudTextField Label="Ticker" @bind-Value="newAsset.Ticker" Required />
         </MudItem>
         <MudItem xs="12" sm="4">
-            <MudTextField Label="Name" @bind-Value="newAsset.Name" />
+            <MudTextField Label="Name" @bind-Value="newAsset.Name" Required/>
         </MudItem>
         <MudItem xs="12" sm="4">
             <MudSelect @bind-Value="newAsset.Currency" Label="Currency">
@@ -67,66 +66,13 @@
     }
 
 
-@* <h3>Assets</h3> *@
-
-@* <h4>Add New Asset</h4> *@
-@* <input @bind="newAsset.Ticker" placeholder="Ticker" /> *@
-
-@* <select @bind="newAsset.Currency"> *@
-@*     <option value="">Select Currency</option> *@
-@*     @foreach (var currency in currencies) *@
-@*     { *@
-@*         <option value="@currency.Name">@currency.Name (@currency.Name)</option> *@
-@*     } *@
-@* </select> *@
-
-
-@* <input @bind="newAsset.Name" placeholder="Name" /> <button @onclick="AddAsset">Add Asset</button> *@
-
-
-@* @if (assets == null) *@
-@* { *@
-@*     <p>Loading...</p> *@
-@* } *@
-@* else if (!assets.Any()) *@
-@* { *@
-@*     <p>No assets found.</p> *@
-@* } *@
-@* else *@
-@* { *@
-@*     <table> *@
-@*         <thead> *@
-@*             <tr> *@
-@*                 <th>Asset ID</th> *@
-@*                 <th>Ticker</th> *@
-@*                 <th>Name</th> *@
-@*                 <th>Currency</th> *@
-@*                 <th>Actions</th> *@
-@*             </tr> *@
-@*         </thead> *@
-@*         <tbody> *@
-@*             @foreach (var asset in assets) *@
-@*             { *@
-@*                 <tr> *@
-@*                     <td>@asset.Id</td> *@
-@*                     <td>@asset.Ticker</td> *@
-@*                     <td>@asset.Name</td> *@
-@*                     <td>@asset.Currency</td> *@
-@*                     <td> *@
-@*                         <button @onclick="() => DeleteAsset(asset.Id)">Delete</button> *@
-@*                     </td> *@
-@*                 </tr> *@
-@*             } *@
-@*         </tbody> *@
-@*     </table> *@
-@* } *@
-
 @code {
 
     //TO DO : Factorize in a clean Architecture
     private List<AssetDto> assets = new();
     private AssetCreateDto newAsset = new AssetCreateDto("","", Currency.USD);
     private List<CurrencyDto> currencies = new();
+    private string errorMessage;
 
     protected override async Task OnInitializedAsync()
     {
@@ -157,7 +103,7 @@
         }
         else
         {
-            Console.WriteLine("Failed to add asset");
+            Snackbar.Add("Failed to add asset", Severity.Error);
         }
     }
 

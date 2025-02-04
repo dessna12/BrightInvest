@@ -45,9 +45,10 @@ namespace BrightInvest.Presentation.Controllers
 		public async Task<ActionResult<AssetDto>> PostAsset([FromBody] AssetCreateDto asset)
 		{
 			if (asset == null)
-			{
 				return BadRequest("Invalid asset data");
-			}
+
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
 
 			await _assetUseCase.CreateAssetAsync(asset);
 			return Ok(asset);
