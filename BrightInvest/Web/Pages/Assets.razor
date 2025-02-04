@@ -4,66 +4,69 @@
 @using BrightInvest.Domain.Enum
 @using BrightInvest.Infrastructure.DataBase
 @using BrightInvest.Web.Services
+@using BrightInvest.Web.Shared.Dialog
 @using Microsoft.EntityFrameworkCore
 @inject NavigationManager Navigation
 @inject CustomHttpClientService CustomHttpClientService
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 <PageTitle>Assets</PageTitle>
 
-    <MudText Typo="Typo.h2">Assets</MudText>
+<MudText Typo="Typo.h2">Assets</MudText>
 
-    <MudText Typo="Typo.h4">Add New Asset</MudText>
+<MudText Typo="Typo.h4">Add New Asset</MudText>
 
-    <MudGrid>
-        <MudItem xs="12" sm="4">
-            <MudTextField Label="Ticker" @bind-Value="newAsset.Ticker" Required />
-        </MudItem>
-        <MudItem xs="12" sm="4">
-            <MudTextField Label="Name" @bind-Value="newAsset.Name" Required/>
-        </MudItem>
-        <MudItem xs="12" sm="4">
-            <MudSelect @bind-Value="newAsset.Currency" Label="Currency">
-                @foreach (var currency in Enum.GetValues<Currency>())
-                {
-                    <MudSelectItem Value="currency">@currency.ToString()</MudSelectItem>
-                }
-            </MudSelect>
-        </MudItem>
-        <MudItem xs="12">
-            <MudButton OnClick="AddAsset" Variant="Variant.Filled" Color="Color.Primary">Add Asset</MudButton>
-        </MudItem>
-    </MudGrid>
+<MudGrid>
+    <MudItem xs="12" sm="4">
+        <MudTextField Label="Ticker" @bind-Value="newAsset.Ticker" Required />
+    </MudItem>
+    <MudItem xs="12" sm="4">
+        <MudTextField Label="Name" @bind-Value="newAsset.Name" Required/>
+    </MudItem>
+    <MudItem xs="12" sm="4">
+        <MudSelect @bind-Value="newAsset.Currency" Label="Currency">
+            @foreach (var currency in Enum.GetValues<Currency>())
+            {
+                <MudSelectItem Value="currency">@currency.ToString()</MudSelectItem>
+            }
+        </MudSelect>
+    </MudItem>
+    <MudItem xs="12">
+        <MudButton OnClick="AddAsset" Variant="Variant.Filled" Color="Color.Primary">Add Asset</MudButton>
+    </MudItem>
+</MudGrid>
 
-    @if (assets == null)
-    {
-        <MudText>Loading...</MudText>
-    }
-    else if (!assets.Any())
-    {
-        <MudText>No assets found.</MudText>
-    }
-    else
-    {
-        <MudTable Items="@assets" Hover="true" Breakpoint="Breakpoint.Sm">
-            <HeaderContent >
-                <MudTh Style="font-weight:bold">Asset ID</MudTh>
-                <MudTh Style="font-weight:bold">Ticker</MudTh>
-                <MudTh Style="font-weight:bold">Name</MudTh>
-                <MudTh Style="font-weight:bold">Currency</MudTh>
-                <MudTh Style="font-weight:bold">Actions</MudTh>
-            </HeaderContent>
-            <RowTemplate Context="asset">
-                <MudTd DataLabel="Asset ID">@asset.Id</MudTd>
-                <MudTd DataLabel="Ticker">@asset.Ticker</MudTd>
-                <MudTd DataLabel="Name">@asset.Name</MudTd>
-                <MudTd DataLabel="Currency">@asset.Currency</MudTd>
-                <MudTd DataLabel="Actions">
-                    <MudButton OnClick="() => DeleteAsset(asset.Id)" Color="Color.Error">Delete</MudButton>
-                </MudTd>
-            </RowTemplate>
-        </MudTable>
-    }
+@if (assets == null)
+{
+    <MudText>Loading...</MudText>
+}
+else if (!assets.Any())
+{
+    <MudText>No assets found.</MudText>
+}
+else
+{
+    <MudTable Items="@assets" Hover="true" Breakpoint="Breakpoint.Sm">
+        <HeaderContent >
+            <MudTh Style="font-weight:bold">Asset ID</MudTh>
+            <MudTh Style="font-weight:bold">Ticker</MudTh>
+            <MudTh Style="font-weight:bold">Name</MudTh>
+            <MudTh Style="font-weight:bold">Currency</MudTh>
+            <MudTh Style="font-weight:bold">Actions</MudTh>
+        </HeaderContent>
+        <RowTemplate Context="asset">
+            <MudTd DataLabel="Asset ID">@asset.Id</MudTd>
+            <MudTd DataLabel="Ticker">@asset.Ticker</MudTd>
+            <MudTd DataLabel="Name">@asset.Name</MudTd>
+            <MudTd DataLabel="Currency">@asset.Currency</MudTd>
+            <MudTd DataLabel="Actions">
+                <MudIconButton OnClick="@((e) => DeleteServerAsync(asset))" Icon="@Icons.Material.Filled.Delete" Color="Color.Error" />
+                @* <MudIconButton OnClick="() => DeleteAsset(asset.Id)" Icon="@Icons.Material.Filled.Delete" Color="Color.Error" /> *@
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+}
 
 
 @code {
@@ -72,7 +75,6 @@
     private List<AssetDto> assets = new();
     private AssetCreateDto newAsset = new AssetCreateDto("","", Currency.USD);
     private List<CurrencyDto> currencies = new();
-    private string errorMessage;
 
     protected override async Task OnInitializedAsync()
     {
@@ -114,11 +116,31 @@
         if (response.IsSuccessStatusCode)
         {
             await GetAssets();
+            Snackbar.Add("Item successfully deleted", Severity.Success);
         }
         else
         {
-            Console.WriteLine("Failed to delete asset");
+            Snackbar.Add("Failed to add asset", Severity.Error);
         }
     }
+
+    private async Task DeleteServerAsync(AssetDto asset)
+    {
+        var parameters = new DialogParameters<DeleteDialog> {
+            { x => x.ContentText, $"Are you sure you want to delete the asset {asset.Name}?" },
+            { x => x.ButtonText, "Delete" },
+            { x => x.Color, Color.Error }, 
+        };
+
+        var dialog = await DialogService.ShowAsync<DeleteDialog>("Delete Asset", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await DeleteAsset(asset.Id);
+        }
+    }
+
+
 
 }
