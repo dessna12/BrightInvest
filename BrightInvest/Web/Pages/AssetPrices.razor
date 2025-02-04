@@ -1,6 +1,7 @@
 ﻿@page "/asset-prices"
 @using BrightInvest.Application.DTOs.AssetPrices
 @using BrightInvest.Web.Services
+@using MudBlazor
 @inject NavigationManager Navigation
 @inject CustomHttpClientService CustomHttpClientService
 
@@ -9,6 +10,10 @@
 <h3>Fetch Asset Prices</h3>
 
 <div>
+
+    <MudButton Variant="Variant.Filled" Color="Color.Primary">
+        Click Me!
+    </MudButton>
     <label>Enter Asset Symbol:</label>
     <input @bind="symbol" placeholder="e.g. AAPL" />
     <button @onclick="FetchPrices">Fetch Prices</button>

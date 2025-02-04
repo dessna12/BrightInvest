@@ -11,6 +11,7 @@ using BrightInvest.Web.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
+using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,7 @@ builder.Services.AddRazorPages().AddRazorPagesOptions(options =>
 	options.RootDirectory = "/Web";
 });
 
+builder.Services.AddMudServices();
 
 builder.Services.AddScoped<CustomHttpClientService>();
 

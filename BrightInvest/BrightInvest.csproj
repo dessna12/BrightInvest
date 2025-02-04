@@ -24,6 +24,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
+    <PackageReference Include="MudBlazor" Version="8.2.0" />
+    <PackageReference Include="MudBlazor.ThemeManager" Version="3.0.0" />
   </ItemGroup>
 
 </Project>

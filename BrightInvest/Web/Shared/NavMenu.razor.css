@@ -4,11 +4,25 @@
 
 .top-row {
     height: 3.5rem;
-    background-color: rgba(0,0,0,0.4);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .navbar-brand {
-    font-size: 1.1rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #f2e6d5;
+    font-family: 'Pathway Gothic One', sans-serif;
+    padding-left: 0.5rem;
+}
+
+.container-fluid {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-left: 0;
+    padding-right: 0;
 }
 
 .oi {
@@ -59,4 +73,7 @@
         /* Never collapse the sidebar for wide screens */
         display: block;
     }
-}
+
+    .top-row {
+        margin-left:4rem;
+    }
