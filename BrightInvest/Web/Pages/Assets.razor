@@ -1,5 +1,7 @@
 ﻿@page "/assets"
+@using BrightInvest.Application.DTOs.Currency
 @using BrightInvest.Domain.Entities
+@using BrightInvest.Domain.Enum
 @using BrightInvest.Infrastructure.DataBase
 @using BrightInvest.Web.Services
 @using Microsoft.EntityFrameworkCore
@@ -8,62 +10,139 @@
 
 <PageTitle>Assets</PageTitle>
 
-<h3>Assets</h3>
-
-<h4>Add New Asset</h4>
-<input @bind="newAsset.Ticker" placeholder="Ticker" />
-<input @bind="newAsset.Name" placeholder="Name" /> <button @onclick="AddAsset">Add Asset</button>
 
 
-@if (assets == null)
-{
-    <p>Loading...</p>
-}
-else if (!assets.Any())
-{
-    <p>No assets found.</p>
-}
-else
-{
-    <table>
-        <thead>
-            <tr>
-                <th>Asset ID</th>
-                <th>Ticker</th>
-                <th>Name</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var asset in assets)
-            {
-                <tr>
-                    <td>@asset.Id</td>
-                    <td>@asset.Ticker</td>
-                    <td>@asset.Name</td>
-                    <td>
-                    <button @onclick="() => DeleteAsset(asset.Id)">Delete</button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+    <MudText Typo="Typo.h2">Assets</MudText>
+
+    <MudText Typo="Typo.h4">Add New Asset</MudText>
+
+    <MudGrid>
+        <MudItem xs="12" sm="4">
+            <MudTextField Label="Ticker" @bind-Value="newAsset.Ticker" />
+        </MudItem>
+        <MudItem xs="12" sm="4">
+            <MudTextField Label="Name" @bind-Value="newAsset.Name" />
+        </MudItem>
+        <MudItem xs="12" sm="4">
+            <MudSelect @bind-Value="newAsset.Currency" Label="Currency">
+                @foreach (var currency in Enum.GetValues<Currency>())
+                {
+                    <MudSelectItem Value="currency">@currency.ToString()</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12">
+            <MudButton OnClick="AddAsset" Variant="Variant.Filled" Color="Color.Primary">Add Asset</MudButton>
+        </MudItem>
+    </MudGrid>
+
+    @if (assets == null)
+    {
+        <MudText>Loading...</MudText>
+    }
+    else if (!assets.Any())
+    {
+        <MudText>No assets found.</MudText>
+    }
+    else
+    {
+        <MudTable Items="@assets" Hover="true" Breakpoint="Breakpoint.Sm">
+            <HeaderContent >
+                <MudTh Style="font-weight:bold">Asset ID</MudTh>
+                <MudTh Style="font-weight:bold">Ticker</MudTh>
+                <MudTh Style="font-weight:bold">Name</MudTh>
+                <MudTh Style="font-weight:bold">Currency</MudTh>
+                <MudTh Style="font-weight:bold">Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate Context="asset">
+                <MudTd DataLabel="Asset ID">@asset.Id</MudTd>
+                <MudTd DataLabel="Ticker">@asset.Ticker</MudTd>
+                <MudTd DataLabel="Name">@asset.Name</MudTd>
+                <MudTd DataLabel="Currency">@asset.Currency</MudTd>
+                <MudTd DataLabel="Actions">
+                    <MudButton OnClick="() => DeleteAsset(asset.Id)" Color="Color.Error">Delete</MudButton>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    }
+
+
+@* <h3>Assets</h3> *@
+
+@* <h4>Add New Asset</h4> *@
+@* <input @bind="newAsset.Ticker" placeholder="Ticker" /> *@
+
+@* <select @bind="newAsset.Currency"> *@
+@*     <option value="">Select Currency</option> *@
+@*     @foreach (var currency in currencies) *@
+@*     { *@
+@*         <option value="@currency.Name">@currency.Name (@currency.Name)</option> *@
+@*     } *@
+@* </select> *@
+
+
+@* <input @bind="newAsset.Name" placeholder="Name" /> <button @onclick="AddAsset">Add Asset</button> *@
+
+
+@* @if (assets == null) *@
+@* { *@
+@*     <p>Loading...</p> *@
+@* } *@
+@* else if (!assets.Any()) *@
+@* { *@
+@*     <p>No assets found.</p> *@
+@* } *@
+@* else *@
+@* { *@
+@*     <table> *@
+@*         <thead> *@
+@*             <tr> *@
+@*                 <th>Asset ID</th> *@
+@*                 <th>Ticker</th> *@
+@*                 <th>Name</th> *@
+@*                 <th>Currency</th> *@
+@*                 <th>Actions</th> *@
+@*             </tr> *@
+@*         </thead> *@
+@*         <tbody> *@
+@*             @foreach (var asset in assets) *@
+@*             { *@
+@*                 <tr> *@
+@*                     <td>@asset.Id</td> *@
+@*                     <td>@asset.Ticker</td> *@
+@*                     <td>@asset.Name</td> *@
+@*                     <td>@asset.Currency</td> *@
+@*                     <td> *@
+@*                         <button @onclick="() => DeleteAsset(asset.Id)">Delete</button> *@
+@*                     </td> *@
+@*                 </tr> *@
+@*             } *@
+@*         </tbody> *@
+@*     </table> *@
+@* } *@
 
 @code {
 
     //TO DO : Factorize in a clean Architecture
     private List<AssetDto> assets = new();
-    private AssetCreateDto newAsset = new AssetCreateDto("","");
+    private AssetCreateDto newAsset = new AssetCreateDto("","", Currency.USD);
+    private List<CurrencyDto> currencies = new();
 
     protected override async Task OnInitializedAsync()
     {
         await GetAssets();
+        await LoadCurrencies();
     }
 
     protected async Task GetAssets() {
         var httpClient = CustomHttpClientService.GetHttpClient();
         assets = await httpClient.GetFromJsonAsync<List<AssetDto>>("api/assets");
+    }
+
+    private async Task LoadCurrencies()
+    {
+        var httpClient = CustomHttpClientService.GetHttpClient();
+        currencies = await httpClient.GetFromJsonAsync<List<CurrencyDto>>("api/currencies");
     }
 
     protected async Task AddAsset() {
@@ -73,7 +152,7 @@ else
         if (response.IsSuccessStatusCode)
         {
             var createdAsset = await response.Content.ReadFromJsonAsync<AssetDto>(); 
-            newAsset = new AssetCreateDto("", "");
+            newAsset = new AssetCreateDto("", "", Currency.USD);
             await GetAssets();
         }
         else
@@ -94,10 +173,6 @@ else
         {
             Console.WriteLine("Failed to delete asset");
         }
-
-
-
-
     }
 
 }

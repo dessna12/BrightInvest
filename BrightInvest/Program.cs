@@ -2,6 +2,7 @@ using System.Globalization;
 using BrightInvest.Application.Services.AlphaVantage;
 using BrightInvest.Application.UseCases.AssetPrices;
 using BrightInvest.Application.UseCases.Assets;
+using BrightInvest.Application.UseCases.Currencies;
 using BrightInvest.Application.UseCases.Interfaces;
 using BrightInvest.Domain.Interfaces;
 using BrightInvest.Infrastructure.DataBase;
@@ -39,6 +40,9 @@ builder.Services.AddScoped<IAssetPriceRepository, AssetPriceRepository>();
 builder.Services.AddScoped<IAssetPriceUseCase, AssetPriceUseCase>();
 
 builder.Services.AddScoped<IAlphaVantageService, AlphaVantageService>();
+
+builder.Services.AddScoped<ICurrencyRepository, CurrencyRepository>();
+builder.Services.AddScoped<ICurrencyUseCase, CurrencyUseCase>();
 
 builder.Services.AddControllers(options =>
 {

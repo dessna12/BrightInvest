@@ -15,7 +15,7 @@ namespace BrightInvest.Application.UseCases.Assets
 		public async Task<IEnumerable<AssetDto>> GetAllAssetsAsync()
 		{
 			var assets = await _assetRepository.GetAllAssetsAsync();
-			return assets.Select(asset => new AssetDto(asset.Id, asset.Ticker, asset.Name));
+			return assets.Select(asset => new AssetDto(asset.Id, asset.Ticker, asset.Name, asset.Currency));
 		}
 
 		public async Task<AssetDto> GetAssetByIdAsync(Guid assetId)
@@ -24,15 +24,15 @@ namespace BrightInvest.Application.UseCases.Assets
 			if (asset == null)
 				throw new KeyNotFoundException($"Asset with ID {assetId} not found.");
 
-			return new AssetDto(asset.Id, asset.Ticker, asset.Name);
+			return new AssetDto(asset.Id, asset.Ticker, asset.Name, asset.Currency);
 		}
 
 		public async Task<AssetDto> CreateAssetAsync(AssetCreateDto assetCreateDto) 
 		{
-			var asset = new Asset(assetCreateDto.Ticker, assetCreateDto.Name);
+			var asset = new Asset(assetCreateDto.Ticker, assetCreateDto.Name, assetCreateDto.Currency);
 			await _assetRepository.AddAssetAsync(asset);
 
-			return new AssetDto(asset.Id, asset.Ticker, asset.Name);
+			return new AssetDto(asset.Id, asset.Ticker, asset.Name, asset.Currency);
 		}
 
 		public async Task<bool> DeleteAssetAsync(Guid assetId)
