@@ -14,9 +14,9 @@ public class AssetUpdateDto
 	public string Name { get; set; }
 
 	[Required]
-	public Currency Currency { get; set; }
+	public string Currency { get; set; }
 
-	public AssetUpdateDto(Guid id, string ticker, string name, Currency currency)
+	public AssetUpdateDto(Guid id, string ticker, string name, string currency)
 	{
 		Id = id;
 		Ticker = ticker;

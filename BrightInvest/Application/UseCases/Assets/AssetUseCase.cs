@@ -1,43 +1,47 @@
 ﻿using BrightInvest.Domain.Interfaces;
 using BrightInvest.Domain.Entities;
 using BrightInvest.Application.UseCases.Interfaces;
+using AutoMapper;
 
 namespace BrightInvest.Application.UseCases.Assets
 {
 	public class AssetUseCase : IAssetUseCase
 	{
 		private readonly IAssetRepository _assetRepository;
-		public AssetUseCase(IAssetRepository assetRepository)
+		private readonly IMapper _mapper;
+		public AssetUseCase(IAssetRepository assetRepository, IMapper mapper)
 		{
 			_assetRepository = assetRepository;
+			_mapper = mapper;
 		}
 
 		public async Task<IEnumerable<AssetDto>> GetAllAssetsAsync()
 		{
 			var assets = await _assetRepository.GetAllAssetsAsync();
-			return assets.Select(asset => new AssetDto(asset.Id, asset.Ticker, asset.Name, asset.Currency));
+			return assets.Select(asset => _mapper.Map<AssetDto>(asset));
 		}
 
 		public async Task<AssetDto> GetAssetByIdAsync(Guid assetId)
 		{
-			var asset = await _assetRepository.GetAssetByIdAsync(assetId);
+			Asset asset = await _assetRepository.GetAssetByIdAsync(assetId);
 			if (asset == null)
 				throw new KeyNotFoundException($"Asset with ID {assetId} not found.");
 
-			return new AssetDto(asset.Id, asset.Ticker, asset.Name, asset.Currency);
+			return _mapper.Map<AssetDto>(asset);
+			//return new AssetDto(asset.Id, asset.Ticker, asset.Name, asset.Currency.ToString());
 		}
 
 		public async Task<AssetDto> CreateAssetAsync(AssetCreateDto assetCreateDto) 
 		{
-			var asset = new Asset(assetCreateDto.Ticker, assetCreateDto.Name, assetCreateDto.Currency);
+			Asset asset = _mapper.Map<Asset>(assetCreateDto);
 			await _assetRepository.AddAssetAsync(asset);
 
-			return new AssetDto(asset.Id, asset.Ticker, asset.Name, asset.Currency);
+			return _mapper.Map<AssetDto>(asset);
 		}
 
 		public async Task<bool> UpdateAssetAsync(AssetUpdateDto assetUpdateDto)
 		{
-			Asset asset = new Asset(assetUpdateDto.Id, assetUpdateDto.Ticker, assetUpdateDto.Name, assetUpdateDto.Currency);
+			Asset asset = _mapper.Map<Asset>(assetUpdateDto);
 			return await _assetRepository.UpdateAssetAsync(asset);
 		}
 

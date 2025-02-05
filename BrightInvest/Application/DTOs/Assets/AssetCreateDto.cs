@@ -12,9 +12,9 @@ public class AssetCreateDto
 	public string Name { get; set; }
 
 	[Required]
-	public Currency Currency { get; set; }
+	public string Currency { get; set; }
 
-	public AssetCreateDto(string ticker, string name, Currency currency)
+	public AssetCreateDto(string ticker, string name, string currency)
 	{
 		Ticker = ticker;
 		Name = name;

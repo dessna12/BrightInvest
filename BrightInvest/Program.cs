@@ -1,4 +1,5 @@
 using System.Globalization;
+using BrightInvest.Application.Mappings;
 using BrightInvest.Application.Services.AlphaVantage;
 using BrightInvest.Application.UseCases.AssetPrices;
 using BrightInvest.Application.UseCases.Assets;
@@ -51,7 +52,7 @@ builder.Services.AddControllers(options =>
 });
 
 builder.Services.AddServerSideBlazor();
-//builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();
 

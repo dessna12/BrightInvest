@@ -28,7 +28,7 @@
         <MudSelect @bind-Value="newAsset.Currency" Label="Currency">
             @foreach (var currency in Enum.GetValues<Currency>())
             {
-                <MudSelectItem Value="currency">@currency.ToString()</MudSelectItem>
+                <MudSelectItem Value="@currency.ToString()">@currency.ToString()</MudSelectItem>
             }
         </MudSelect>
     </MudItem>
@@ -83,21 +83,21 @@ else
                 }
             </MudTd>
 
-            <MudTd DataLabel="Currency">
-                @if (editingAssetId == asset.Id && editableAsset != null)
-                {
-                    <MudSelect @bind-Value="editableAsset.Currency">
-                        @foreach (var currency in Enum.GetValues<Currency>())
-                    {
-                        <MudSelectItem Value="@currency">@currency</MudSelectItem>
-                    }
-                </MudSelect>
-                }
-                else
-                {
-                    <MudText>@asset.Currency</MudText>
-                }
-            </MudTd>
+             <MudTd DataLabel="Currency"> 
+                 @if (editingAssetId == asset.Id && editableAsset != null) 
+                { 
+                     <MudSelect @bind-Value="editableAsset.Currency"> 
+                         @foreach (var currency in Enum.GetValues<Currency>().Select(e => e.ToString())) 
+                     { 
+                         <MudSelectItem Value="@currency">@currency</MudSelectItem> 
+                     } 
+                 </MudSelect> 
+                 } 
+                 else 
+                 { 
+                     <MudText>@asset.Currency</MudText> 
+                 } 
+             </MudTd> 
 
 
             <MudTd DataLabel="Actions">
@@ -127,7 +127,7 @@ else
 
     //TO DO : Factorize in a clean Architecture
     private List<AssetDto> assets = new();
-    private AssetCreateDto newAsset = new AssetCreateDto("","", Currency.USD);
+    private AssetCreateDto newAsset = new AssetCreateDto("","", "USD");
     private List<CurrencyDto> currencies = new();
     private Guid? editingAssetId = null;
     private AssetUpdateDto? editableAsset;
@@ -157,7 +157,7 @@ else
         if (response.IsSuccessStatusCode)
         {
             var createdAsset = await response.Content.ReadFromJsonAsync<AssetDto>(); 
-            newAsset = new AssetCreateDto("", "", Currency.USD);
+            newAsset = new AssetCreateDto("", "", "USD");
             await GetAssets();
         }
         else
