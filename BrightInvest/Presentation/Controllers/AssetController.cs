@@ -54,6 +54,21 @@ namespace BrightInvest.Presentation.Controllers
 			return Ok(asset);
 		}
 
+		//PUT: api/assets/id
+		[HttpPut("{id}")]
+		public async Task<ActionResult<AssetDto>> UpdateAsset(Guid id, [FromBody] AssetUpdateDto asset)
+		{
+			if (asset == null)
+				return BadRequest("Invalid asset data");
+
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+
+			await _assetUseCase.UpdateAssetAsync(asset);
+			return Ok(asset);
+		}
+
+
 		//DELETE: api/assets/id
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> DeleteAsset(Guid id)

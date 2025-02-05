@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using BrightInvest.Domain.Enum;
 
 public record AssetDto

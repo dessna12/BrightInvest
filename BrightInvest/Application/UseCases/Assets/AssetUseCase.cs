@@ -35,6 +35,12 @@ namespace BrightInvest.Application.UseCases.Assets
 			return new AssetDto(asset.Id, asset.Ticker, asset.Name, asset.Currency);
 		}
 
+		public async Task<bool> UpdateAssetAsync(AssetUpdateDto assetUpdateDto)
+		{
+			Asset asset = new Asset(assetUpdateDto.Id, assetUpdateDto.Ticker, assetUpdateDto.Name, assetUpdateDto.Currency);
+			return await _assetRepository.UpdateAssetAsync(asset);
+		}
+
 		public async Task<bool> DeleteAssetAsync(Guid assetId)
 		{
 			return await _assetRepository.DeleteAssetAsync(assetId);

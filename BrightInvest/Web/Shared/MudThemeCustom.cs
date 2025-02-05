@@ -14,7 +14,7 @@ public static class CustomMudTheme
 			AppbarBackground = "#204d4f",
 			DrawerBackground = "#204d4f",
 			DrawerText = "#f2fbfa",
-			Success = "#78d0cc",
+			Success = "#3A9D62",
 			Warning = "#d5f2ef",
 			Error = "#d8390d",
 			Info = "#339899",

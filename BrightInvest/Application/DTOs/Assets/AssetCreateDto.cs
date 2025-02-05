@@ -14,7 +14,6 @@ public class AssetCreateDto
 	[Required]
 	public Currency Currency { get; set; }
 
-
 	public AssetCreateDto(string ticker, string name, Currency currency)
 	{
 		Ticker = ticker;

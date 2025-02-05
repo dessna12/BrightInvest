@@ -37,7 +37,7 @@
     </MudItem>
 </MudGrid>
 
-@if (assets == null)
+@if (assets == null || assets.Count == 0)
 {
     <MudText>Loading...</MudText>
 }
@@ -56,13 +56,67 @@ else
             <MudTh Style="font-weight:bold">Actions</MudTh>
         </HeaderContent>
         <RowTemplate Context="asset">
+            @* <MudTd DataLabel="Asset ID">@asset.Id</MudTd> *@
+            @* <MudTd DataLabel="Ticker">@asset.Ticker</MudTd> *@
+            @* <MudTd DataLabel="Name">@asset.Name</MudTd> *@
+            @* <MudTd DataLabel="Currency">@asset.Currency</MudTd> *@
+
             <MudTd DataLabel="Asset ID">@asset.Id</MudTd>
-            <MudTd DataLabel="Ticker">@asset.Ticker</MudTd>
-            <MudTd DataLabel="Name">@asset.Name</MudTd>
-            <MudTd DataLabel="Currency">@asset.Currency</MudTd>
+
+            <MudTd DataLabel="Ticker">
+                @if (editingAssetId == asset.Id && editableAsset != null){
+                    <MudTextField @bind-Value="editableAsset.Ticker" Immediate="true" />
+                }
+                else{
+                    <MudText>@asset.Ticker</MudText>
+                }
+            </MudTd>
+
+            <MudTd DataLabel="Name">
+                @if (editingAssetId == asset.Id && editableAsset !=null)
+                {
+                    <MudTextField @bind-Value="editableAsset.Name" Immediate="true" />
+                }
+                else
+                {
+                    <MudText>@asset.Name</MudText>
+                }
+            </MudTd>
+
+            <MudTd DataLabel="Currency">
+                @if (editingAssetId == asset.Id && editableAsset != null)
+                {
+                    <MudSelect @bind-Value="editableAsset.Currency">
+                        @foreach (var currency in Enum.GetValues<Currency>())
+                    {
+                        <MudSelectItem Value="@currency">@currency</MudSelectItem>
+                    }
+                </MudSelect>
+                }
+                else
+                {
+                    <MudText>@asset.Currency</MudText>
+                }
+            </MudTd>
+
+
             <MudTd DataLabel="Actions">
-                <MudIconButton OnClick="@((e) => DeleteServerAsync(asset))" Icon="@Icons.Material.Filled.Delete" Color="Color.Error" />
-                @* <MudIconButton OnClick="() => DeleteAsset(asset.Id)" Icon="@Icons.Material.Filled.Delete" Color="Color.Error" /> *@
+                @if (editingAssetId == asset.Id)
+                {
+                    <MudButton OnClick="SaveAsset" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Save">
+                        Save
+                    </MudButton>
+                    <MudButton OnClick="CancelEdit" Color="Color.Error" StartIcon="@Icons.Material.Filled.Cancel">
+                        Cancel
+                    </MudButton>
+                }
+                else
+                {
+                    <MudButton OnClick="() => StartEdit(asset)" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit">
+                        Edit
+                    </MudButton>
+                    <MudIconButton OnClick="@((e) => OpenDeleteDialogAsync(asset))" Icon="@Icons.Material.Filled.Delete" Color="Color.Error" />
+                }
             </MudTd>
         </RowTemplate>
     </MudTable>
@@ -75,6 +129,9 @@ else
     private List<AssetDto> assets = new();
     private AssetCreateDto newAsset = new AssetCreateDto("","", Currency.USD);
     private List<CurrencyDto> currencies = new();
+    private Guid? editingAssetId = null;
+    private AssetUpdateDto? editableAsset;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -124,7 +181,7 @@ else
         }
     }
 
-    private async Task DeleteServerAsync(AssetDto asset)
+    private async Task OpenDeleteDialogAsync(AssetDto asset)
     {
         var parameters = new DialogParameters<DeleteDialog> {
             { x => x.ContentText, $"Are you sure you want to delete the asset {asset.Name}?" },
@@ -141,6 +198,35 @@ else
         }
     }
 
+    private void StartEdit(AssetDto asset)
+    {
+        editableAsset = new AssetUpdateDto(asset.Id, asset.Ticker, asset.Name, asset.Currency);
+        editingAssetId = asset.Id;
+    }
 
+    private void CancelEdit()
+    {
+        editableAsset = null;
+        editingAssetId = null;
+    }
 
+    private async Task SaveAsset()
+    {
+        if (editableAsset == null || editingAssetId == null)
+            return;
+
+        var httpClient = CustomHttpClientService.GetHttpClient();
+        var response = await httpClient.PutAsJsonAsync($"api/assets/{editingAssetId}", editableAsset);
+        if (response.IsSuccessStatusCode)
+        {
+            await GetAssets();
+            Snackbar.Add("Asset updated successfully!", Severity.Success);    
+        }
+        else
+        {
+            Snackbar.Add("Failed to update asset.", Severity.Error);
+        }
+        CancelEdit();
+        
+    }
 }

@@ -4,6 +4,7 @@ using BrightInvest.Domain.Entities;
 using BrightInvest.Domain.Interfaces;
 using BrightInvest.Infrastructure.DataBase;
 using Microsoft.EntityFrameworkCore;
+using static MudBlazor.CategoryTypes;
 
 namespace BrightInvest.Infrastructure.Repository;
 
@@ -45,6 +46,24 @@ public class AssetRepository : IAssetRepository
 	{
 		await _context.Assets.AddAsync(asset);
 		await _context.SaveChangesAsync();
+	}
+
+	public async Task<bool> UpdateAssetAsync(Asset asset)
+	{
+		try
+		{
+			var existingAsset = await _context.Assets.FindAsync(asset.Id);
+			if (existingAsset == null)
+				throw new KeyNotFoundException("Asset not found");
+
+			_context.Entry(existingAsset).CurrentValues.SetValues(asset);
+			await _context.SaveChangesAsync();
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
 	}
 
 	public async Task<bool> DeleteAssetAsync(Guid assetId)

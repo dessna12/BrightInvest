@@ -9,6 +9,7 @@ public interface IAssetRepository
 	Task<Asset> GetAssetByIdAsync(Guid id);
 	Task<Asset> GetAssetBySymbolAsync(string symbol);
 	Task AddAssetAsync(Asset asset);
+	Task<bool> UpdateAssetAsync(Asset asset);
 	Task<bool> DeleteAssetAsync(Guid id);	
 }
 
