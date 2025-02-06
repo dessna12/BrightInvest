@@ -8,42 +8,80 @@
 
 <PageTitle>Assets</PageTitle>
 
-<h3>Fetch Asset Prices</h3>
+<MudText Typo="Typo.h2">Fetch Asset Prices</MudText>
+
+<MudGrid AlignItems="Center">
+    <MudItem xs="12" sm="6">
+        <MudTextField @bind-Value="symbol" Label="Enter Asset Symbol" Placeholder="e.g. AAPL" Variant="Variant.Outlined" />
+    </MudItem>
+
+    <MudItem xs="12" sm="6">
+        <MudButton OnClick="FetchPrices" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Fetch Prices</MudButton>
+    </MudItem>
+</MudGrid>
+
 
 <div>
-
-    <MudButton Variant="Variant.Filled" Color="Color.Primary">
-        Click Me!
-    </MudButton>
-    <label>Enter Asset Symbol:</label>
-    <input @bind="symbol" placeholder="e.g. AAPL" />
-    <button @onclick="FetchPrices">Fetch Prices</button>
+    @if (assetPrices.Any())
+    {
+        <MudChart ChartType="MudBlazor.ChartType.Line" ChartSeries="@_series" XAxisLabels="@_xAxisLabels" ChartOptions="@_options" Width="100%" Height="350px"></MudChart>
+    }
+    else
+    {
+        <MudText Typo="Typo.body1">Loading data...</MudText>
+    }
+    
+    <MudSlider @bind-Value="_options.YAxisTicks" Min="10" Max="400" Step="10" Color="MudBlazor.Color.Info">Y-Axis Ticks: @_options.YAxisTicks.ToString()</MudSlider>
 </div>
 
-@if (assetPrices != null && assetPrices.Any())
-{
-    <table>
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Close Price</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var price in assetPrices)
-            {
-                <tr>
-                    <td>@price.Date.ToShortDateString()</td>
-                    <td>@price.ClosePrice.ToString("C")</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+@* @if (assetPrices != null && assetPrices.Any()) *@
+@* { *@
+@*     <MudTable Items="assetPrices" Hover="true"> *@
+@*         <HeaderContent> *@
+@*             <MudTh>Date</MudTh> *@
+@*             <MudTh>Close Price</MudTh> *@
+@*         </HeaderContent> *@
+@*         <RowTemplate> *@
+@*             <MudTd DataLabel="Date">@context.Date.ToShortDateString()</MudTd> *@
+@*             <MudTd DataLabel="Close Price">@context.ClosePrice.ToString("0.00")</MudTd> *@
+@*         </RowTemplate> *@
+@*     </MudTable> *@
+@* } *@
 
 @code {
-    private string symbol = "";
+    private string symbol = "GOOGL";
     private List<AssetPriceDto> assetPrices = new();
+
+    private readonly List<ChartSeries> _series = new();
+    private readonly ChartOptions _options = new();
+    private Guid assetId;
+
+    private string[] _xAxisLabels;
+    private double[] _priceData;
+
+    protected override async Task OnInitializedAsync()
+    {       
+        await FetchPrices();
+
+        var groupedPrices = assetPrices
+            .GroupBy(ap => new { ap.Date.Year, ap.Date.Month }) // Group by Year & Month
+            .Select(g => g.OrderBy(ap => ap.Date).First()) // Take the first date of the month
+            .ToList();
+
+
+        // Map the data to the chart series format
+        _xAxisLabels = groupedPrices.Select(ap => ap.Date.ToString("MMM yyyy")).ToArray();
+        _priceData = groupedPrices.Select(ap => (double)ap.ClosePrice).ToArray(); // Convert decimal to double for chart
+
+        _series.Add(new ChartSeries { Name = symbol, Data = _priceData });
+
+        _options.YAxisTicks = 50; // Customize Y-axis ticks
+
+        StateHasChanged();
+    }
+
+
+
 
     private async Task FetchPrices()
     {
@@ -59,6 +97,6 @@
             Console.WriteLine($"Error fetching prices: {ex.Message}");
         }
     }
-}
+
 
 }

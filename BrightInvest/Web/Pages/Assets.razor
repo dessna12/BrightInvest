@@ -17,25 +17,27 @@
 
 <MudText Typo="Typo.h4">Add New Asset</MudText>
 
-<MudGrid>
-    <MudItem xs="12" sm="4">
+<MudGrid Spacing="2" AlignItems="Center">
+    <MudItem xs="12" sm="3">
         <MudTextField Label="Ticker" @bind-Value="newAsset.Ticker" Required />
     </MudItem>
-    <MudItem xs="12" sm="4">
-        <MudTextField Label="Name" @bind-Value="newAsset.Name" Required/>
+    <MudItem xs="12" sm="3">
+        <MudTextField Label="Name" @bind-Value="newAsset.Name" Required />
     </MudItem>
-    <MudItem xs="12" sm="4">
+    <MudItem xs="12" sm="1">
         <MudSelect @bind-Value="newAsset.Currency" Label="Currency">
-            @foreach (var currency in Enum.GetValues<Currency>())
+            @foreach (var currency in Enum.GetValues<Currency>().Select(e => e.ToString()))
             {
-                <MudSelectItem Value="@currency.ToString()">@currency.ToString()</MudSelectItem>
+                <MudSelectItem Value="@currency">@currency</MudSelectItem>
             }
         </MudSelect>
     </MudItem>
-    <MudItem xs="12">
-        <MudButton OnClick="AddAsset" Variant="Variant.Filled" Color="Color.Primary">Add Asset</MudButton>
+    <MudItem xs="12" sm="3" Class="d-flex align-center">
+        <MudButton OnClick="AddAsset" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Add Asset</MudButton>
     </MudItem>
 </MudGrid>
+
+<MudText Typo="Typo.h4" Class="mt-2 mb-3">All Assets</MudText>
 
 @if (assets == null || assets.Count == 0)
 {
@@ -103,19 +105,19 @@ else
             <MudTd DataLabel="Actions">
                 @if (editingAssetId == asset.Id)
                 {
-                    <MudButton OnClick="SaveAsset" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Save">
+                    <MudButton OnClick="SaveAsset" Color="MudBlazor.Color.Primary" StartIcon="@Icons.Material.Filled.Save">
                         Save
                     </MudButton>
-                    <MudButton OnClick="CancelEdit" Color="Color.Error" StartIcon="@Icons.Material.Filled.Cancel">
+                    <MudButton OnClick="CancelEdit" Color="MudBlazor.Color.Error" StartIcon="@Icons.Material.Filled.Cancel">
                         Cancel
                     </MudButton>
                 }
                 else
                 {
-                    <MudButton OnClick="() => StartEdit(asset)" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit">
+                    <MudButton OnClick="() => StartEdit(asset)" Color="MudBlazor.Color.Primary" StartIcon="@Icons.Material.Filled.Edit">
                         Edit
                     </MudButton>
-                    <MudIconButton OnClick="@((e) => OpenDeleteDialogAsync(asset))" Icon="@Icons.Material.Filled.Delete" Color="Color.Error" />
+                    <MudIconButton OnClick="@((e) => OpenDeleteDialogAsync(asset))" Icon="@Icons.Material.Filled.Delete" Color="MudBlazor.Color.Error" />
                 }
             </MudTd>
         </RowTemplate>
@@ -186,7 +188,7 @@ else
         var parameters = new DialogParameters<DeleteDialog> {
             { x => x.ContentText, $"Are you sure you want to delete the asset {asset.Name}?" },
             { x => x.ButtonText, "Delete" },
-            { x => x.Color, Color.Error }, 
+            { nameof(DeleteDialog.Color), MudColor.Error },
         };
 
         var dialog = await DialogService.ShowAsync<DeleteDialog>("Delete Asset", parameters);

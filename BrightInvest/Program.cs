@@ -1,4 +1,5 @@
 using System.Globalization;
+using ApexCharts;
 using BrightInvest.Application.Mappings;
 using BrightInvest.Application.Services.AlphaVantage;
 using BrightInvest.Application.UseCases.AssetPrices;
@@ -53,6 +54,8 @@ builder.Services.AddControllers(options =>
 
 builder.Services.AddServerSideBlazor();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+builder.Services.AddApexCharts();
 
 var app = builder.Build();
 

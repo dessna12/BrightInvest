@@ -1,0 +1,67 @@
+﻿@page "/apex-charts-asset"
+@using BrightInvest.Application.DTOs.AssetPrices
+@using BrightInvest.Application.DTOs.Currency
+@using BrightInvest.Domain.Entities
+@using BrightInvest.Domain.Enum
+@using BrightInvest.Infrastructure.DataBase
+@using BrightInvest.Web.Services
+@using BrightInvest.Web.Shared.Dialog
+@using Microsoft.EntityFrameworkCore
+@inject NavigationManager Navigation
+@inject CustomHttpClientService CustomHttpClientService
+
+@using ApexCharts
+
+@if (assetPrices == null || !assetPrices.Any())
+{
+    <p>No data available for the chart.</p>
+}
+else
+{
+    <ApexChart TItem="AssetPriceDto" Title="Asset Price Over Time">
+        <ApexPointSeries TItem="AssetPriceDto"
+                         Items="assetPrices"
+                         SeriesType="@SeriesType.Area"
+                         Name="Close Price"
+                         XValue="@(ap => ap.Date.ToString("yyyy-MM-dd"))"
+                         YValue="@(ap => ap.ClosePrice)" />
+    </ApexChart>
+}
+
+@code {
+    private string symbol = "GOOGL";
+    private List<AssetPriceDto> assetPrices = new();
+    private List<AssetPriceDto> groupedPrices = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await FetchPrices();
+
+        // Group by Year & Month and select the first entry of each month
+        // groupedPrices = assetPrices
+        //     .GroupBy(ap => new { ap.Date.Year, ap.Date.Month })
+        //     .Select(g => g.OrderBy(ap => ap.Date).First())
+        //     .ToList();
+        assetPrices = assetPrices.OrderBy(ap => ap.Date).ToList();
+
+        Console.WriteLine($"Grouped {groupedPrices.Count} prices.");
+
+        StateHasChanged();
+    }
+
+    private async Task FetchPrices()
+    {
+        if (string.IsNullOrWhiteSpace(symbol)) return;
+
+        try
+        {
+            var httpClient = CustomHttpClientService.GetHttpClient();
+            assetPrices = await httpClient.GetFromJsonAsync<List<AssetPriceDto>>($"api/asset-prices/ticker/{symbol}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching prices: {ex.Message}");
+        }
+    }
+
+}

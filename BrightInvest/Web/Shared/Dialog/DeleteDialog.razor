@@ -27,7 +27,7 @@
     public string ButtonText { get; set; } = "Confirm";
 
     [Parameter]
-    public Color Color { get; set; }
+    public MudColor Color { get; set; }
 
     private void Submit() => MudDialog.Close(DialogResult.Ok(true));
 

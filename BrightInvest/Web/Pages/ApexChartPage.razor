@@ -1,0 +1,49 @@
+﻿@page "/apex-charts"
+@using BrightInvest.Application.DTOs.Currency
+@using BrightInvest.Domain.Entities
+@using BrightInvest.Domain.Enum
+@using BrightInvest.Infrastructure.DataBase
+@using BrightInvest.Web.Services
+@using BrightInvest.Web.Shared.Dialog
+@using Microsoft.EntityFrameworkCore
+@inject NavigationManager Navigation
+
+@using ApexCharts
+
+<ApexChart TItem="Order"
+           Title="Basic Sample">
+
+    <ApexPointSeries TItem="Order"
+                Items="orders"
+                 SeriesType="@SeriesType.Area"
+                Name="Gross Value"
+                XValue="@(e => e.Country)"
+                YAggregate="@(e => e.Sum(e => e.GrossValue))"
+                OrderByDescending="e=>e.Y" />
+
+    <ApexPointSeries TItem="Order"
+                Items="orders"
+                 SeriesType="@SeriesType.Area"
+                Name="Net Value"
+                XValue="@(e => e.Country)"
+                YAggregate="@(e => e.Sum(e => e.NetValue))"
+                OrderByDescending="e=>e.Y" />
+</ApexChart>
+
+@code {
+    private List<Order> orders = new()
+    {
+        new Order { Country = "USA", GrossValue = 100000, NetValue = 90000 },
+        new Order { Country = "Canada", GrossValue = 85000, NetValue = 78000 },
+        new Order { Country = "UK", GrossValue = 92000, NetValue = 87000 },
+        new Order { Country = "Germany", GrossValue = 89000, NetValue = 82000 },
+        new Order { Country = "France", GrossValue = 87000, NetValue = 81000 }
+    };
+
+    public class Order
+    {
+        public string Country { get; set; } = string.Empty;
+        public decimal GrossValue { get; set; }
+        public decimal NetValue { get; set; }
+    }
+}

@@ -43,7 +43,9 @@ namespace BrightInvest.Application.UseCases.AssetPrices
 		public async Task<IEnumerable<AssetPriceDto>> GetAllAssetPricesByAssetIdAsync(Guid assetId)
 		{
 			var assetPrices = await _assetPriceRepository.GetAllAssetPricesByAssetIdAsync(assetId);
-			return assetPrices.Select(assetPrice => MapToAssetPriceDto(assetPrice));
+			return assetPrices
+					.OrderBy(assetPrice => assetPrice.Date)
+					.Select(assetPrice => MapToAssetPriceDto(assetPrice));
 		}
 
 		public async Task<IEnumerable<AssetPriceDto>> GetAllAssetPricesBySymbolAsync(string symbol)
@@ -72,9 +74,10 @@ namespace BrightInvest.Application.UseCases.AssetPrices
 
 			}
 
-			var assetPrices = await _assetPriceRepository.GetAllAssetPricesByAssetIdAsync(asset.Id);
-			var assetPriceDTO = assetPrices.Select(assetPrice => MapToAssetPriceDto(assetPrice));
-			return assetPriceDTO;
+			var assetPricesDTO = await GetAllAssetPricesByAssetIdAsync(asset.Id);
+			//var assetPrices = await _assetPriceRepository.GetAllAssetPricesByAssetIdAsync(asset.Id);
+			//var assetPriceDTO = assetPrices.Select(assetPrice => MapToAssetPriceDto(assetPrice));
+			return assetPricesDTO;
 		}
 
 		public async Task<AssetPriceDto> CreateAssetPriceAsync(AssetPriceCreateDto assetCreateDto)
