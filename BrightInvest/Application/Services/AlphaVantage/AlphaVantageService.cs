@@ -19,7 +19,7 @@ namespace BrightInvest.Application.Services.AlphaVantage
 		}
 
 
-		public async Task<List<StockDataDto>> FetchAllStockPricesAsync(string symbol)
+		public async Task<List<StockDataDto>> FetchAllStockPricesAsync(string symbol, DateTime? fromDate = null)
 		{
 			var url = $"{_baseUrl}/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={_apiKey}";
 
@@ -39,7 +39,7 @@ namespace BrightInvest.Application.Services.AlphaVantage
 			}
 
 			// Map AlphaVantage response to StockDataDto
-			return stockData.TimeSeries
+			List<StockDataDto> stockDataDto = stockData.TimeSeries
 				.Select(ts => new StockDataDto
 				{
 					Date = DateTime.Parse(ts.Key),
@@ -47,6 +47,10 @@ namespace BrightInvest.Application.Services.AlphaVantage
 				})
 				.ToList();
 
+			if (fromDate != null)
+				stockDataDto = stockDataDto.Where(data => data.Date >= fromDate).ToList();
+
+			return stockDataDto;
 		}
 
 		private decimal ParseClosePrice(string closePrice)

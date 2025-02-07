@@ -2,6 +2,7 @@ using System.Globalization;
 using ApexCharts;
 using BrightInvest.Application.Mappings;
 using BrightInvest.Application.Services.AlphaVantage;
+using BrightInvest.Application.Services.Date;
 using BrightInvest.Application.UseCases.AssetPrices;
 using BrightInvest.Application.UseCases.Assets;
 using BrightInvest.Application.UseCases.Currencies;
@@ -64,7 +65,7 @@ using (var scope = app.Services.CreateScope())
 {
 	var dbContext = scope.ServiceProvider.GetRequiredService<DataContext>();
 	dbContext.Database.EnsureCreated(); // Creates the database if it does not exist
-	//dbContext.Database.Migrate();
+	dbContext.Database.Migrate();
 }
 
 // Configure the HTTP request pipeline.

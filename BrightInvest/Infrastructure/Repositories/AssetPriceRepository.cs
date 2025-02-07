@@ -46,20 +46,35 @@ namespace BrightInvest.Infrastructure.Repositories
 		{
 			return await _context.AssetPrices
 				.Where(ap => ap.AssetId == assetId)
-				.OrderByDescending(ap => ap.Date)
+				.OrderBy(ap => ap.Date)
 				.LastOrDefaultAsync();
 		}
 
 		public async Task AddAssetPriceAsync(AssetPrice assetPrice)
 		{
-			await _context.AssetPrices.AddAsync(assetPrice);
-			await _context.SaveChangesAsync();
+			try
+			{
+				await _context.AssetPrices.AddAsync(assetPrice);
+				await _context.SaveChangesAsync();
+			}
+			catch (DbUpdateException ex)
+			{
+				Console.WriteLine("Duplicate data detected, skipping insert.");
+			}
 		}
 
 		public async Task AddAssetPricesAsync(List<AssetPrice> assetPrices)
 		{
-			await _context.AssetPrices.AddRangeAsync(assetPrices);
-			await _context.SaveChangesAsync();
+			try
+			{
+				await _context.AssetPrices.AddRangeAsync(assetPrices);
+				await _context.SaveChangesAsync();
+			}
+			catch (DbUpdateException ex)
+			{
+				Console.WriteLine("Duplicate data detected, skipping insert.");
+
+			}
 		}
 
 		public async Task<bool> DeleteAssetPriceAsync(Guid id)

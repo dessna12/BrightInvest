@@ -19,7 +19,14 @@ namespace BrightInvest.Infrastructure.DataBase
 				.HasOne(ap => ap.Asset)
 				.WithMany(a => a.Prices)
 				.HasForeignKey(ap => ap.AssetId);
+
+
+			// Enforce uniqueness: Each AssetId can only have one entry per Date
+			modelBuilder.Entity<AssetPrice>()
+				.HasIndex(ap => new { ap.AssetId, ap.Date })
+				.IsUnique();
 		}
+
 
 	}
 }

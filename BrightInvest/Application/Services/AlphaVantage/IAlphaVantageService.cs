@@ -5,7 +5,7 @@ namespace BrightInvest.Application.Services.AlphaVantage
 {
 	public interface IAlphaVantageService
 	{
-		Task<List<StockDataDto>> FetchAllStockPricesAsync(string symbol);
+		Task<List<StockDataDto>> FetchAllStockPricesAsync(string symbol, DateTime? fromDate);
 
 	}
 }

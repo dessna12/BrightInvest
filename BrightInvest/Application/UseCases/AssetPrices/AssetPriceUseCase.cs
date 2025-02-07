@@ -1,5 +1,6 @@
 ﻿using BrightInvest.Application.DTOs.AssetPrices;
 using BrightInvest.Application.Services.AlphaVantage;
+using BrightInvest.Application.Services.Date;
 using BrightInvest.Application.UseCases.Interfaces;
 using BrightInvest.Domain.Entities;
 using BrightInvest.Domain.Interfaces;
@@ -59,10 +60,13 @@ namespace BrightInvest.Application.UseCases.AssetPrices
 
 			// Case 2: Check if we have recent prices in the database
 			var lastPrice = await _assetPriceRepository.GetLatestPriceByAssetIdAsync(asset.Id);
-			// If not Fetch 
-			if (lastPrice == null || lastPrice.Date != DateTime.UtcNow.Date)
+			DateTime lastWorkingDay = DateService.GetLastWorkingDay(DateTime.UtcNow.Date);
+
+			// If not Fetch
+			DateTime? fromDate = lastPrice?.Date.AddDays(1);			
+			if (lastPrice == null || lastPrice.Date != lastWorkingDay)
 			{
-				var stockDataList = await _alphaVantageService.FetchAllStockPricesAsync(symbol);
+				var stockDataList = await _alphaVantageService.FetchAllStockPricesAsync(symbol, fromDate);
 				if (stockDataList == null || !stockDataList.Any())
 				{
 					throw new Exception($"No stock data found for symbol: {symbol}");
@@ -101,6 +105,7 @@ namespace BrightInvest.Application.UseCases.AssetPrices
 		{
 			return new AssetPriceDto(assetPrice.Id, assetPrice.AssetId, assetPrice.Date, assetPrice.ClosePrice);
 		}
+
 
 
 	}
