@@ -24,9 +24,6 @@ namespace BrightInvest.Application.UseCases.Assets
 		public async Task<AssetDto> GetAssetByIdAsync(Guid assetId)
 		{
 			Asset asset = await _assetRepository.GetAssetByIdAsync(assetId);
-			if (asset == null)
-				throw new KeyNotFoundException($"Asset with ID {assetId} not found.");
-
 			return _mapper.Map<AssetDto>(asset);
 			//return new AssetDto(asset.Id, asset.Ticker, asset.Name, asset.Currency.ToString());
 		}

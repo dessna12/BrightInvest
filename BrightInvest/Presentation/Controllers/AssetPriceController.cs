@@ -26,32 +26,57 @@ namespace BrightInvest.Presentation.Controllers
 		[HttpGet]
 		public async Task<IActionResult> GetAssets()
 		{
-			var assetPrices = await _assetPriceUseCase.GetAllAssetPricesAsync();
-			return Ok(assetPrices);
+			try
+			{
+				var assetPrices = await _assetPriceUseCase.GetAllAssetPricesAsync();
+				return Ok(assetPrices);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound();
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
+			}
 		}
 
 		// GET: api/asset-prices/id
 		[HttpGet("{id}")]
 		public async Task<ActionResult<AssetPriceDto>> GetAssetPrice(Guid id)
 		{
-			var assetPrice = await _assetPriceUseCase.GetAssetPriceByIdAsync(id);
-			if (assetPrice == null)
+			try
+			{
+				var assetPrice = await _assetPriceUseCase.GetAssetPriceByIdAsync(id);
+				return Ok(assetPrice);
+			}
+			catch (KeyNotFoundException ex)
 			{
 				return NotFound();
 			}
-			return Ok(assetPrice);
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
+			}
 		}
 
 		// GET: api/asset-prices/ticker/symbol
 		[HttpGet("ticker/{symbol}")]
 		public async Task<ActionResult<AssetPriceDto>> GetAllAssetPricesBySymbolAsync(string symbol)
 		{
-			var assetPrices = await _assetPriceUseCase.GetAllAssetPricesBySymbolAsync(symbol);
-			if (assetPrices == null || !assetPrices.Any())
+			try
+			{
+				var assetPrices = await _assetPriceUseCase.GetAllAssetPricesBySymbolAsync(symbol);
+				return Ok(assetPrices);
+			}
+			catch (KeyNotFoundException ex)
 			{
 				return NotFound();
 			}
-			return Ok(assetPrices);
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
+			}
 		}
 
 
@@ -60,27 +85,34 @@ namespace BrightInvest.Presentation.Controllers
 		public async Task<ActionResult<AssetPriceDto>> PostAssetPrice([FromBody] AssetPriceCreateDto assetPrice)
 		{
 			if (assetPrice == null)
-			{
 				return BadRequest("Invalid asset data");
+			try
+			{
+				await _assetPriceUseCase.CreateAssetPriceAsync(assetPrice);
+				return Ok(assetPrice);
 			}
-
-			await _assetPriceUseCase.CreateAssetPriceAsync(assetPrice);
-			return Ok(assetPrice);
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
+			}
 		}
 
 		//DELETE: api/asset-prices/id
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> DeleteAsset(Guid id)
 		{
-			bool response = await _assetPriceUseCase.DeleteAssetPriceAsync(id);
-
-			if (response)
+			try
 			{
+				bool response = await _assetPriceUseCase.DeleteAssetPriceAsync(id);
 				return NoContent();
 			}
-			else
+			catch (KeyNotFoundException ex)
 			{
-				return NotFound(); 
+				return NotFound();
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
 			}
 		}
 

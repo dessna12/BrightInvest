@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Net;
 using BrightInvest.Application.Services.Assets;
 using BrightInvest.Application.UseCases.Interfaces;
@@ -24,20 +25,38 @@ namespace BrightInvest.Presentation.Controllers
 		[HttpGet]
 		public async Task<IActionResult> GetAssets()
 		{
-			var assets = await _assetUseCase.GetAllAssetsAsync();
-			return Ok(assets);
+			try
+			{
+				var assets = await _assetUseCase.GetAllAssetsAsync();
+				return Ok(assets);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound();
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
+			}
 		}
 
 		// GET: api/assets/id
 		[HttpGet("{id}")]
 		public async Task<ActionResult<AssetDto>> GetAsset(Guid id)
 		{
-			var asset = await _assetUseCase.GetAssetByIdAsync(id);
-			if (asset == null)
+			try
+			{
+				var asset = await _assetUseCase.GetAssetByIdAsync(id);
+				return Ok(asset);
+			}
+			catch (KeyNotFoundException ex)
 			{
 				return NotFound();
 			}
-			return Ok(asset);
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
+			}
 		}
 
 		//POST: api/assets
@@ -46,12 +65,18 @@ namespace BrightInvest.Presentation.Controllers
 		{
 			if (asset == null)
 				return BadRequest("Invalid asset data");
-
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 
-			await _assetUseCase.CreateAssetAsync(asset);
-			return Ok(asset);
+			try
+			{
+				await _assetUseCase.CreateAssetAsync(asset);
+				return Ok(asset);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
+			}
 		}
 
 		//PUT: api/assets/id
@@ -60,12 +85,17 @@ namespace BrightInvest.Presentation.Controllers
 		{
 			if (asset == null)
 				return BadRequest("Invalid asset data");
-
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
-
-			await _assetUseCase.UpdateAssetAsync(asset);
-			return Ok(asset);
+			try
+			{
+				await _assetUseCase.UpdateAssetAsync(asset);
+				return Ok(asset);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
+			}
 		}
 
 
@@ -73,15 +103,18 @@ namespace BrightInvest.Presentation.Controllers
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> DeleteAsset(Guid id)
 		{
-			bool response = await _assetUseCase.DeleteAssetAsync(id);
-
-			if (response)
+			try
 			{
+				bool response = await _assetUseCase.DeleteAssetAsync(id);
 				return NoContent();
 			}
-			else
+			catch (KeyNotFoundException ex)
 			{
-				return NotFound(); 
+				return NotFound();
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
 			}
 		}
 

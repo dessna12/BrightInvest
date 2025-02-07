@@ -1,5 +1,6 @@
 
 
+using BrightInvest.Repository.Exceptions;
 using BrightInvest.Domain.Entities;
 using BrightInvest.Domain.Interfaces;
 using BrightInvest.Infrastructure.DataBase;
@@ -19,33 +20,49 @@ public class AssetRepository : IAssetRepository
 
 	public async Task<IEnumerable<Asset>> GetAllAssetsAsync()
 	{
-		return await _context.Assets.ToListAsync();
+		try
+		{
+			return await _context.Assets.ToListAsync();
+		}
+		catch (Exception ex)
+		{
+			throw new RepositoryException($"An unexpected error occurred while fetching assets. :", ex);
+		}
 	}
 
 	public async Task<Asset> GetAssetByIdAsync(Guid id)
 	{
 		Asset asset = await _context.Assets.FindAsync(id);
+
 		if (asset == null)
-		{
 			throw new KeyNotFoundException($"Asset with ID {id} not found.");
-		}
 		return asset;
 	}
 
 	public async Task<Asset> GetAssetBySymbolAsync(string symbol)
 	{
 		Asset asset = await _context.Assets.Where(a => a.Ticker == symbol).FirstOrDefaultAsync(); ;
+		
 		if (asset == null)
-		{
 			throw new KeyNotFoundException($"Asset with symbol {symbol} not found.");
-		}
 		return asset;
 	}
 
 	public async Task AddAssetAsync(Asset asset)
 	{
-		await _context.Assets.AddAsync(asset);
-		await _context.SaveChangesAsync();
+		try
+		{
+			await _context.Assets.AddAsync(asset);
+			await _context.SaveChangesAsync();
+		}
+		catch (DbUpdateException ex)
+		{
+			throw new RepositoryException("Failed to add asset to the database.", ex);
+		}
+		catch (Exception ex)
+		{
+			throw new RepositoryException("An unexpected error occurred while adding an asset.", ex);
+		}
 	}
 
 	public async Task<bool> UpdateAssetAsync(Asset asset)
@@ -60,9 +77,17 @@ public class AssetRepository : IAssetRepository
 			await _context.SaveChangesAsync();
 			return true;
 		}
-		catch
+		catch (DbUpdateConcurrencyException ex)
 		{
-			return false;
+			throw new RepositoryException("A concurrency error occurred while updating the asset.", ex);
+		}
+		catch (KeyNotFoundException ex)
+		{
+			throw ex;
+		}
+		catch (Exception ex)
+		{
+			throw new RepositoryException("An unexpected error occurred while updating the asset.", ex);
 		}
 	}
 
@@ -70,17 +95,25 @@ public class AssetRepository : IAssetRepository
 	{
 		try
 		{
-			var asset = await GetAssetByIdAsync(assetId);
-			_context.Assets.Remove(asset);
+			var existingAsset = await GetAssetByIdAsync(assetId);
+			if (existingAsset == null)
+				throw new KeyNotFoundException("Asset not found");
+
+			_context.Assets.Remove(existingAsset);
 			await _context.SaveChangesAsync();
 			return true;
 		}
-		catch 
+		catch (DbUpdateConcurrencyException ex)
 		{
-			return false;
+			throw new RepositoryException("A concurrency error occurred while updating the asset.", ex);
+		}
+		catch (KeyNotFoundException ex)
+		{
+			throw ex;
+		}
+		catch (Exception ex)
+		{
+			throw new RepositoryException("An unexpected error occurred while updating the asset.", ex);
 		}
 	}
-
-	
-
 }

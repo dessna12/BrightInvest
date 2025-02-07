@@ -1,4 +1,5 @@
 ﻿using BrightInvest.Application.DTOs.AssetPrices;
+using BrightInvest.Application.Exceptions;
 using BrightInvest.Application.Services.AlphaVantage;
 using BrightInvest.Application.Services.Date;
 using BrightInvest.Application.UseCases.Interfaces;
@@ -36,8 +37,6 @@ namespace BrightInvest.Application.UseCases.AssetPrices
 		public async Task<AssetPriceDto> GetAssetPriceByIdAsync(Guid id)
 		{
 			var assetPrice = await _assetPriceRepository.GetAssetPriceByIdAsync(id);
-			if (assetPrice == null)
-				throw new KeyNotFoundException($"Asset with ID {id} not found.");
 			return MapToAssetPriceDto(assetPrice);
 		}
 
@@ -51,14 +50,9 @@ namespace BrightInvest.Application.UseCases.AssetPrices
 
 		public async Task<IEnumerable<AssetPriceDto>> GetAllAssetPricesBySymbolAsync(string symbol)
 		{
-			// Case 1: The asset is not in the Asset List
 			var asset = await _assetRepository.GetAssetBySymbolAsync(symbol);
-			if (asset == null)
-			{
-				throw new KeyNotFoundException($"Asset with symbol {symbol} not found.");
-			}
 
-			// Case 2: Check if we have recent prices in the database
+			// Check if we have recent prices in the database
 			var lastPrice = await _assetPriceRepository.GetLatestPriceByAssetIdAsync(asset.Id);
 			DateTime lastWorkingDay = DateService.GetLastWorkingDay(DateTime.UtcNow.Date);
 
@@ -67,20 +61,13 @@ namespace BrightInvest.Application.UseCases.AssetPrices
 			if (lastPrice == null || lastPrice.Date != lastWorkingDay)
 			{
 				var stockDataList = await _alphaVantageService.FetchAllStockPricesAsync(symbol, fromDate);
-				if (stockDataList == null || !stockDataList.Any())
-				{
-					throw new Exception($"No stock data found for symbol: {symbol}");
-				}
 
 				// Add in DB
 				var assetPricesToAdd = stockDataList.Select(s => new AssetPrice(asset.Id, s.Date, s.ClosePrice)).ToList();
 				await _assetPriceRepository.AddAssetPricesAsync(assetPricesToAdd);
-
 			}
 
 			var assetPricesDTO = await GetAllAssetPricesByAssetIdAsync(asset.Id);
-			//var assetPrices = await _assetPriceRepository.GetAllAssetPricesByAssetIdAsync(asset.Id);
-			//var assetPriceDTO = assetPrices.Select(assetPrice => MapToAssetPriceDto(assetPrice));
 			return assetPricesDTO;
 		}
 
@@ -103,10 +90,14 @@ namespace BrightInvest.Application.UseCases.AssetPrices
 
 		private AssetPriceDto MapToAssetPriceDto(AssetPrice assetPrice)
 		{
-			return new AssetPriceDto(assetPrice.Id, assetPrice.AssetId, assetPrice.Date, assetPrice.ClosePrice);
+			try
+			{
+				return new AssetPriceDto(assetPrice.Id, assetPrice.AssetId, assetPrice.Date, assetPrice.ClosePrice);
+			}
+			catch (Exception ex)
+			{
+				throw new UseCaseException($"Failed to map asset price: {ex.Message}", ex);
+			}
 		}
-
-
-
 	}
 }
