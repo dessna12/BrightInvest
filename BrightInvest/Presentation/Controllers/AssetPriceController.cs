@@ -60,6 +60,25 @@ namespace BrightInvest.Presentation.Controllers
 			}
 		}
 
+		// GET: api/asset-prices/asset-id/id
+		[HttpGet("asset-id/{id}")]
+		public async Task<ActionResult<AssetPriceDto>> GetAllAssetPricesByAssetIdAsync(Guid id)
+		{
+			try
+			{
+				var assetPrices = await _assetPriceUseCase.GetAllAssetPricesByAssetIdAsync(id);
+				return Ok(assetPrices);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound();
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
+			}
+		}
+
 		// GET: api/asset-prices/ticker/symbol
 		[HttpGet("ticker/{symbol}")]
 		public async Task<ActionResult<AssetPriceDto>> GetAllAssetPricesBySymbolAsync(string symbol)

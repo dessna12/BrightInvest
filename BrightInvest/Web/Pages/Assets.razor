@@ -57,13 +57,13 @@ else
             <MudTh Style="font-weight:bold">Currency</MudTh>
             <MudTh Style="font-weight:bold">Actions</MudTh>
         </HeaderContent>
-        <RowTemplate Context="asset">
+        <RowTemplate Context="asset" >
             @* <MudTd DataLabel="Asset ID">@asset.Id</MudTd> *@
             @* <MudTd DataLabel="Ticker">@asset.Ticker</MudTd> *@
             @* <MudTd DataLabel="Name">@asset.Name</MudTd> *@
             @* <MudTd DataLabel="Currency">@asset.Currency</MudTd> *@
 
-            <MudTd DataLabel="Asset ID">@asset.Id</MudTd>
+            <MudTd DataLabel="Asset ID"><MudLink Href="@($"/assets/{asset.Id}")">@asset.Id</MudLink></MudTd>
 
             <MudTd DataLabel="Ticker">
                 @if (editingAssetId == asset.Id && editableAsset != null){
@@ -114,9 +114,7 @@ else
                 }
                 else
                 {
-                    <MudButton OnClick="() => StartEdit(asset)" Color="MudBlazor.Color.Primary" StartIcon="@Icons.Material.Filled.Edit">
-                        Edit
-                    </MudButton>
+                    <MudIconButton OnClick="() => StartEdit(asset)" Color="MudBlazor.Color.Primary" Icon="@Icons.Material.Filled.Edit" />
                     <MudIconButton OnClick="@((e) => OpenDeleteDialogAsync(asset))" Icon="@Icons.Material.Filled.Delete" Color="MudBlazor.Color.Error" />
                 }
             </MudTd>
