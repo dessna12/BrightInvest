@@ -5,6 +5,7 @@
 @inject NavigationManager Navigation
 @inject CustomHttpClientService CustomHttpClientService
 @inject ExcelService ExcelService
+@inject ISnackbar Snackbar
 
 
 <PageTitle>Excel</PageTitle>
@@ -43,10 +44,16 @@
         var assetsCreateDto = await ExcelService.ReadAssetsFromExcelAsync(stream);
 
         var httpClient = CustomHttpClientService.GetHttpClient();
-        foreach (var assetCreateDto in assetsCreateDto)
+        var response = await httpClient.PostAsJsonAsync("api/assets/bulk-add", assetsCreateDto);
+        if (response.IsSuccessStatusCode)
         {
-            var response = await httpClient.PostAsJsonAsync("api/assets", assetCreateDto);
+            Snackbar.Add("Assets added successfully!", Severity.Success);
         }
+        else
+        {
+            Snackbar.Add($"Failed to update asset: {response.ReasonPhrase}", Severity.Error);
+        }
+
 
         _isProcessing = false;
         StateHasChanged();

@@ -5,7 +5,7 @@
 		UnitedStates,
 		India,
 		Japan,
-		UnitedKindom,
+		UnitedKingdom,
 		China,
 		HongKong,
 		Australia,

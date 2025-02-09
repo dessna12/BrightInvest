@@ -79,6 +79,28 @@ namespace BrightInvest.Presentation.Controllers
 			}
 		}
 
+		// POST: api/assets/bulk-add
+		[HttpPost("bulk-add")]
+		public async Task<ActionResult<List<AssetDto>>> PostAssets([FromBody] List<AssetCreateDto> assets)
+		{
+			if (assets == null || !assets.Any())
+				return BadRequest("Invalid asset data or empty list.");
+
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+
+			try
+			{
+				var createdAssets = await _assetUseCase.CreateAssetsAsync(assets); // Bulk process
+				return Ok(createdAssets);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { message = $"An unexpected error occurred: {ex.Message}", details = ex.Message });
+			}
+		}
+
+
 		//PUT: api/assets/id
 		[HttpPut("{id}")]
 		public async Task<ActionResult<AssetDto>> UpdateAsset(Guid id, [FromBody] AssetUpdateDto asset)

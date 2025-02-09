@@ -36,6 +36,14 @@ namespace BrightInvest.Application.UseCases.Assets
 			return _mapper.Map<AssetDto>(asset);
 		}
 
+		public async Task<List<AssetDto>> CreateAssetsAsync(List<AssetCreateDto> assetCreateDtos)
+		{
+			var assets = _mapper.Map<List<Asset>>(assetCreateDtos);
+			await _assetRepository.AddAssetsAsync(assets);
+
+			return _mapper.Map<List<AssetDto>>(assets.Where(a => a.Id != Guid.Empty));
+		}
+
 		public async Task<bool> UpdateAssetAsync(AssetUpdateDto assetUpdateDto)
 		{
 			Asset asset = _mapper.Map<Asset>(assetUpdateDto);
