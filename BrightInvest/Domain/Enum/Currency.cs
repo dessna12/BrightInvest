@@ -6,6 +6,7 @@
 		EUR,    
 		GBP,   
 		JPY,    
-		AUD,   
+		AUD,
+		CNY
 	}
 }

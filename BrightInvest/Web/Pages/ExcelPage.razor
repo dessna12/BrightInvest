@@ -40,15 +40,12 @@
         _isProcessing = true;
 
         await using var stream = _selectedFile.OpenReadStream();
-        var assets = await ExcelService.ReadAssetsFromExcelAsync(stream);
+        var assetsCreateDto = await ExcelService.ReadAssetsFromExcelAsync(stream);
 
         var httpClient = CustomHttpClientService.GetHttpClient();
-        foreach (var asset in assets)
+        foreach (var assetCreateDto in assetsCreateDto)
         {
-            AssetCreateDto assetCreateDTO = 
-                new AssetCreateDto(asset.Ticker, asset.Name, asset.Currency, asset.Country, asset.Sector);
-
-            var response = await httpClient.PostAsJsonAsync("api/assets", assetCreateDTO);
+            var response = await httpClient.PostAsJsonAsync("api/assets", assetCreateDto);
         }
 
         _isProcessing = false;

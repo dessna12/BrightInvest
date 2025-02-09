@@ -4,7 +4,7 @@ using BrightInvest.Domain.Enum;
 public class AssetCreateDto
 {
 	[Required]
-	[StringLength(10, MinimumLength = 2)]
+	[StringLength(10, MinimumLength = 1)]
 	public string Ticker { get; set; }
 
 	[Required]

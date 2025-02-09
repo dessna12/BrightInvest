@@ -52,6 +52,13 @@ public class AssetRepository : IAssetRepository
 	{
 		try
 		{
+			bool assetExists = await _context.Assets.AnyAsync(a => a.Ticker == asset.Ticker);
+
+			if (assetExists)
+			{
+				throw new RepositoryException($"An asset with ticker '{asset.Ticker}' already exists.");
+			}
+
 			await _context.Assets.AddAsync(asset);
 			await _context.SaveChangesAsync();
 		}
@@ -62,6 +69,37 @@ public class AssetRepository : IAssetRepository
 		catch (Exception ex)
 		{
 			throw new RepositoryException("An unexpected error occurred while adding an asset.", ex);
+		}
+	}
+
+	public async Task AddAssetsAsync(IEnumerable<Asset> assets)
+	{
+		try
+		{
+			var tickers = assets.Select(a => a.Ticker).ToList();
+
+			// Fetch existing tickers in one query
+			var existingTickers = await _context.Assets
+				.Where(a => tickers.Contains(a.Ticker))
+				.Select(a => a.Ticker)
+				.ToListAsync();
+
+			// Filter out assets that already exist
+			var newAssets = assets.Where(a => !existingTickers.Contains(a.Ticker)).ToList();
+
+			if (newAssets.Any())
+			{
+				await _context.Assets.AddRangeAsync(newAssets);
+				await _context.SaveChangesAsync();
+			}
+		}
+		catch (DbUpdateException ex)
+		{
+			throw new RepositoryException("Failed to add assets to the database.", ex);
+		}
+		catch (Exception ex)
+		{
+			throw new RepositoryException("An unexpected error occurred while adding assets.", ex);
 		}
 	}
 

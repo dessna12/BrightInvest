@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Folder Include="Infrastructure\Migrations\" />
+    <Folder Include="Infrastructure\Seed\" />
     <Folder Include="Shared\" />
   </ItemGroup>
 
