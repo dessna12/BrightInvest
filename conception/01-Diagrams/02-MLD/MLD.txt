@@ -1,5 +1,5 @@
 
-link : https://mermaid.live/edit#pako:eNqNVF1v2jAU_SuWn-gaUFIaSKNpEito60MrJugetuzBS1ywSGxm36BljP9exwE7FNrND2Cf--F7zr3xFqciozjGaU6UGjOykKRIONJrKiQ8iZwJlOAgwajb_aB3fq_3Th-s8TNTIGT1HyF3fEMVFJRD4zxSigJ6_7fbfcV0JocxTCVLaePY_Jra3eXbBkWoyzg4-G58wC8VSMYX6IEU1GJjAnTOCopuJSXABK8Ba81oygqS60oZMJJ_JXnpjKMscww6zG7jFrELFKONYJkNus2Fov8MQ8dxu4S3KTs_y_my5uzwFuna8KUkHBhUJ7ympUyXRNGWtrVVS2BNZ_WY0Tw_E1PDR_4_hdDiqVEKbOPQTxRcqUbTTs13n_wsZTMBlu2-xwZ0VF2H5yxdUXmKtzuv0cnD4z2Cak2_T36VWh4PfRQ88_QoVGsQP14vxFBvVeOm6LBp2Q6apXXnj0RrpJiBSFcG77RIeTYVqqW9eFuel99luzbTmTfqmgt4MdnNbO9TTTjIqnMyj9jDBZUFYZl-Rcx1CYYl1TfgWG8zIlcJTvhO-5ESxKziKY6fSK6oh6UoF0t7Ktd1hfs3yKI0Y_r2-_0rVf95eE34NyG0D8iSmiOOt_g3jv2er1cwDK-DYDCM-mEYReFg6OEKxze94CoY-qEfhlf9QRQMdh7-Y7L4vRuzon7Qv9YrGu6eAQdalRw
+https://mermaid.live/edit#pako:eNqNVNuO2jAQ_RXLT2w3QQnLNaoqUUAtD7uigvahTR9cZxYsEps6DtqU8u91Ltjh0m15CPaZ8cycM2MfMBUR4ADTmKTplJG1JEnIkf4thFTPImYChdgPMXLdd3rltdtv9MYYP7JUCZn_x5E530OqEuCqch6nKSj09rfr_sV0I0ZpWEhGoXKsvmXtNvmhQhFyGVcWnk9P-H2qJONr9EQSMNiUKFixBNBEAlFM8AIw1ggoS0isK2WKkfgLiTNrHEeRZdBiZhk0iN2hAO0Fi8yhSSxS-OcxdH7uGPImZetnON8XnC3eIF0YPmWEK6byK16LTNINSaGhbWHVEhjTTT2WEMc3zhTwmf8PIbR46ZgqtrfoB1C21FLTVsG3Dn6TcjkBhm3d4xK0VG2HV4xuQV7jzc5rdPb0-RFNMimB0_wSV_kOvs1-Zlo2B70XPHL0iOQ7Jb5fei6B6rtwic55lOm0V3EnIuMGvsWy1LVB1Y7oadGwnRpCi7E660il81IJui3xVkMxx4RCRd_uXtf-8tI3ayvb_kpdK6Eurk11cepQs0KK1tWwYwcnIBPCIv1ElelCrDagM-BALyMityEO-VH7kUyJZc4pDp5JnIKDpcjWG7PLdkWF9QNnUIiYzv5YP4HFn4N3hH8VQvsomUG5xcEBv-DA7fnt0Wg47Pid3rDX7Y46Ds413GnrrTfwe_2HQccbeA9HB_8qI_htbzDSQH846Pldrz86_gH4oK0_
 
 classDiagram
     Portfolio "1" --> "0..*" PortfolioHistory
@@ -31,7 +31,11 @@ classDiagram
         -int AssetID
         +string Ticker
         +string Name
+        +ENUM Currency
         +ENUM type[Equity, Bond, Crypto]
+        +ENUM Sector
+        +ENUM Industry
+        +ENUM Country
     }
 
     class AssetPrice{

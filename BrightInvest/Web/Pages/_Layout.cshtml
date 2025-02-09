@@ -8,12 +8,15 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="~/" />
-    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    @* <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" /> *@
     <link href="css/site.css" rel="stylesheet" />
     <link href="BrightInvest.styles.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Pathway+Gothic+One&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
 </head>
 <body>
+    
     @RenderBody()
 
     <div id="blazor-error-ui">
@@ -27,6 +30,7 @@
         <a class="dismiss">🗙</a>
     </div>
 
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
     <script src="_framework/blazor.server.js"></script>
 </body>
 </html>

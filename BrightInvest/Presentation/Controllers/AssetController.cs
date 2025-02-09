@@ -1,36 +1,143 @@
-﻿using System.Net;
-using BrightInvest.Domain.Entities;
-using BrightInvest.Infrastructure.DataBase;
+﻿using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Net;
+using BrightInvest.Application.Services.Assets;
+using BrightInvest.Application.UseCases.Interfaces;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace BrightInvest.Presentation.Controllers
 {
-	[Route("api/")]
+	[Route("assets")]
 	[ApiController]
 	public class AssetController : Controller
 	{
 
-		private readonly DataContext _context;
+		private readonly IAssetUseCase _assetUseCase;
 
-		public AssetController(DataContext context)
+		public AssetController(IAssetUseCase assetUseCase)
 		{
-			_context = context;
+			_assetUseCase = assetUseCase ?? throw new ArgumentNullException(nameof(assetUseCase));
+		}
+
+		// GET: api/assets/
+		[HttpGet]
+		public async Task<IActionResult> GetAssets()
+		{
+			try
+			{
+				var assets = await _assetUseCase.GetAllAssetsAsync();
+				return Ok(assets);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound();
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
+			}
+		}
+
+		// GET: api/assets/id
+		[HttpGet("{id}")]
+		public async Task<ActionResult<AssetDto>> GetAsset(Guid id)
+		{
+			try
+			{
+				var asset = await _assetUseCase.GetAssetByIdAsync(id);
+				return Ok(asset);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound();
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
+			}
+		}
+
+		//POST: api/assets
+		[HttpPost]
+		public async Task<ActionResult<AssetDto>> PostAsset([FromBody] AssetCreateDto asset)
+		{
+			if (asset == null)
+				return BadRequest("Invalid asset data");
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+
+			try
+			{
+				await _assetUseCase.CreateAssetAsync(asset);
+				return Ok(asset);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
+			}
+		}
+
+		// POST: api/assets/bulk-add
+		[HttpPost("bulk-add")]
+		public async Task<ActionResult<List<AssetDto>>> PostAssets([FromBody] List<AssetCreateDto> assets)
+		{
+			if (assets == null || !assets.Any())
+				return BadRequest("Invalid asset data or empty list.");
+
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+
+			try
+			{
+				var createdAssets = await _assetUseCase.CreateAssetsAsync(assets); // Bulk process
+				return Ok(createdAssets);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { message = $"An unexpected error occurred: {ex.Message}", details = ex.Message });
+			}
 		}
 
 
-		// GET: api/asset
-		[HttpGet]
-		[Route("/assets")]
-		public IEnumerable<string> Get()
+		//PUT: api/assets/id
+		[HttpPut("{id}")]
+		public async Task<ActionResult<AssetDto>> UpdateAsset(Guid id, [FromBody] AssetUpdateDto asset)
 		{
-			//List<Asset> assets = _context.Assets.ToList();
-			return new string[] { "value1", "value2" };
+			if (asset == null)
+				return BadRequest("Invalid asset data");
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+			try
+			{
+				await _assetUseCase.UpdateAssetAsync(asset);
+				return Ok(asset);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
+			}
+		}
 
-			//return Json(assets);
+
+		//DELETE: api/assets/id
+		[HttpDelete("{id}")]
+		public async Task<IActionResult> DeleteAsset(Guid id)
+		{
+			try
+			{
+				bool response = await _assetUseCase.DeleteAssetAsync(id);
+				return NoContent();
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound();
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
+			}
 		}
 
 	}

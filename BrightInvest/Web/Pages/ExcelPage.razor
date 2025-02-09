@@ -1,0 +1,61 @@
+﻿@page "/excel-module"
+@using BrightInvest.Application.Services.Excel
+@using BrightInvest.Web.Services
+
+@inject NavigationManager Navigation
+@inject CustomHttpClientService CustomHttpClientService
+@inject ExcelService ExcelService
+@inject ISnackbar Snackbar
+
+
+<PageTitle>Excel</PageTitle>
+
+
+<MudCard>
+    <MudCardContent>
+        <MudText Typo="Typo.h5">Upload Excel File</MudText>
+        <InputFile OnChange="HandleFileUpload" accept=".xlsx" />
+        <MudButton OnClick="ProcessFile" Disabled="@(_selectedFile == null)">Process File</MudButton>
+
+        @if (_isProcessing)
+        {
+            <MudProgressCircular Indeterminate="true" />
+        }
+    </MudCardContent>
+</MudCard>
+
+@code {
+    private IBrowserFile? _selectedFile;
+    private bool _isProcessing = false;
+
+    private async Task HandleFileUpload(InputFileChangeEventArgs e)
+    {
+        _selectedFile = e.File;
+    }
+
+    private async Task ProcessFile()
+    {
+        if (_selectedFile == null)
+            return;
+
+        _isProcessing = true;
+
+        await using var stream = _selectedFile.OpenReadStream();
+        var assetsCreateDto = await ExcelService.ReadAssetsFromExcelAsync(stream);
+
+        var httpClient = CustomHttpClientService.GetHttpClient();
+        var response = await httpClient.PostAsJsonAsync("api/assets/bulk-add", assetsCreateDto);
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add("Assets added successfully!", Severity.Success);
+        }
+        else
+        {
+            Snackbar.Add($"Failed to update asset: {response.ReasonPhrase}", Severity.Error);
+        }
+
+
+        _isProcessing = false;
+        StateHasChanged();
+    }
+}

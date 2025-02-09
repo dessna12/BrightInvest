@@ -1,6 +1,18 @@
 ﻿@inherits LayoutComponentBase
 
+@* Required *@
+<MudThemeProvider Theme="MyCustomTheme" />
+<MudPopoverProvider />
+
+@* Needed for dialogs *@
+<MudDialogProvider />
+
+@* Needed for snackbars *@
+<MudSnackbarProvider />
+
+
 <PageTitle>BrightInvest</PageTitle>
+
 
 <div class="page">
     <div class="sidebar">
@@ -17,3 +29,8 @@
         </article>
     </main>
 </div>
+
+@code{
+    MudTheme MyCustomTheme = CustomMudTheme.GetTheme();
+
+}
