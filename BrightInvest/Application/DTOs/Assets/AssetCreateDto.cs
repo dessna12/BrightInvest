@@ -14,10 +14,17 @@ public class AssetCreateDto
 	[Required]
 	public string Currency { get; set; }
 
-	public AssetCreateDto(string ticker, string name, string currency)
+	[Required]
+	public string Country { get; set; }
+
+	public string? Sector { get; set; }
+
+	public AssetCreateDto(string ticker, string name, string currency, string country, string? sector)
 	{
 		Ticker = ticker;
 		Name = name;
 		Currency = currency;
+		Country = country;
+		Sector = sector;
 	}
 }

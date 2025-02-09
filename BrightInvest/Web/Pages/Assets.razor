@@ -18,7 +18,7 @@
 <MudText Typo="Typo.h4">Add New Asset</MudText>
 
 <MudGrid Spacing="2" AlignItems="Center">
-    <MudItem xs="12" sm="3">
+    <MudItem xs="12" sm="1">
         <MudTextField Label="Ticker" @bind-Value="newAsset.Ticker" Required />
     </MudItem>
     <MudItem xs="12" sm="3">
@@ -32,8 +32,24 @@
             }
         </MudSelect>
     </MudItem>
+    <MudItem xs="12" sm="2">
+        <MudSelect @bind-Value="newAsset.Country" Label="Country">
+            @foreach (var country in Enum.GetValues<Country>().Select(e => e.ToString()))
+            {
+                <MudSelectItem Value="@country">@country</MudSelectItem>
+            }
+        </MudSelect>
+    </MudItem>
+    <MudItem xs="12" sm="2">
+        <MudSelect @bind-Value="newAsset.Sector" Label="Sector">
+            @foreach (var sector in Enum.GetValues<Sector>().Select(e => e.ToString()))
+            {
+                <MudSelectItem Value="@sector">@sector</MudSelectItem>
+            }
+        </MudSelect>
+    </MudItem>
     <MudItem xs="12" sm="3" Class="d-flex align-center">
-        <MudButton OnClick="AddAsset" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Add Asset</MudButton>
+        <MudButton OnClick="AddAsset" Variant="Variant.Filled" Color="MudColor.Primary">Add Asset</MudButton>
     </MudItem>
 </MudGrid>
 
@@ -49,12 +65,14 @@ else if (!assets.Any())
 }
 else
 {
-    <MudTable Items="@assets" Hover="true" Breakpoint="Breakpoint.Sm">
+    <MudTable Items="@assets" Hover="true" Dense="true" Breakpoint="Breakpoint.Sm">
         <HeaderContent >
             <MudTh Style="font-weight:bold">Asset ID</MudTh>
             <MudTh Style="font-weight:bold">Ticker</MudTh>
             <MudTh Style="font-weight:bold">Name</MudTh>
             <MudTh Style="font-weight:bold">Currency</MudTh>
+            <MudTh Style="font-weight:bold">Country</MudTh>
+            <MudTh Style="font-weight:bold">Sector</MudTh>
             <MudTh Style="font-weight:bold">Actions</MudTh>
         </HeaderContent>
         <RowTemplate Context="asset" >
@@ -99,7 +117,39 @@ else
                  { 
                      <MudText>@asset.Currency</MudText> 
                  } 
-             </MudTd> 
+             </MudTd>
+
+            <MudTd DataLabel="Country">
+                @if (editingAssetId == asset.Id && editableAsset != null)
+                {
+                    <MudSelect @bind-Value="editableAsset.Country">
+                        @foreach (var country in Enum.GetValues<Country>().Select(e => e.ToString()))
+                    {
+                        <MudSelectItem Value="@country">@country</MudSelectItem>
+                    }
+                </MudSelect>
+                }
+                else
+                {
+                    <MudText>@asset.Country</MudText>
+                }
+            </MudTd>
+
+            <MudTd DataLabel="Sector">
+                @if (editingAssetId == asset.Id && editableAsset != null)
+                {
+                    <MudSelect @bind-Value="editableAsset.Sector">
+                        @foreach (var sector in Enum.GetValues<Sector>().Select(e => e.ToString()))
+                    {
+                        <MudSelectItem Value="@sector">@sector</MudSelectItem>
+                    }
+                </MudSelect>
+                }
+                else
+                {
+                    <MudText>@asset.Sector</MudText>
+                }
+            </MudTd>
 
 
             <MudTd DataLabel="Actions">
@@ -119,6 +169,16 @@ else
                 }
             </MudTd>
         </RowTemplate>
+        <PagerContent>
+            <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100, int.MaxValue }"
+                           RowsPerPageString="@rowsPerPageString"
+                           InfoFormat="@infoFormat"
+                           AllItemsText="@allItemsText"
+                           HorizontalAlignment="@horizontalAlignment"
+                           HideRowsPerPage="@hideRowsPerPage"
+                           HidePageNumber="@hidePageNumber"
+                           HidePagination=false />
+        </PagerContent>
     </MudTable>
 }
 
@@ -127,10 +187,17 @@ else
 
     //TO DO : Factorize in a clean Architecture
     private List<AssetDto> assets = new();
-    private AssetCreateDto newAsset = new AssetCreateDto("","", "USD");
+    private AssetCreateDto newAsset = new AssetCreateDto("","", "USD", "UnitedStates", "");
     private List<CurrencyDto> currencies = new();
     private Guid? editingAssetId = null;
     private AssetUpdateDto? editableAsset;
+    private HorizontalAlignment horizontalAlignment = HorizontalAlignment.Right;
+    private bool hidePageNumber;
+    private bool hideRowsPerPage;
+    private string rowsPerPageString = "Rows per page:";
+    private string infoFormat = "{first_item}-{last_item} of {all_items}";
+    private string allItemsText = "All";
+
 
 
     protected override async Task OnInitializedAsync()
@@ -157,7 +224,7 @@ else
         if (response.IsSuccessStatusCode)
         {
             var createdAsset = await response.Content.ReadFromJsonAsync<AssetDto>(); 
-            newAsset = new AssetCreateDto("", "", "USD");
+            newAsset = new AssetCreateDto("", "", "USD", "UnitedStates", "");
             await GetAssets();
         }
         else
@@ -200,7 +267,7 @@ else
 
     private void StartEdit(AssetDto asset)
     {
-        editableAsset = new AssetUpdateDto(asset.Id, asset.Ticker, asset.Name, asset.Currency);
+        editableAsset = new AssetUpdateDto(asset.Id, asset.Ticker, asset.Name, asset.Currency, asset.Country, asset.Sector);
         editingAssetId = asset.Id;
     }
 

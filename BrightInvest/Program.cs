@@ -3,6 +3,7 @@ using ApexCharts;
 using BrightInvest.Application.Mappings;
 using BrightInvest.Application.Services.AlphaVantage;
 using BrightInvest.Application.Services.Date;
+using BrightInvest.Application.Services.Excel;
 using BrightInvest.Application.UseCases.AssetPrices;
 using BrightInvest.Application.UseCases.Assets;
 using BrightInvest.Application.UseCases.Currencies;
@@ -46,6 +47,8 @@ builder.Services.AddScoped<IAlphaVantageService, AlphaVantageService>();
 
 builder.Services.AddScoped<ICurrencyRepository, CurrencyRepository>();
 builder.Services.AddScoped<ICurrencyUseCase, CurrencyUseCase>();
+
+builder.Services.AddScoped<ExcelService>();
 
 builder.Services.AddControllers(options =>
 {
