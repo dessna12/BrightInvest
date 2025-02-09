@@ -49,6 +49,8 @@ $RECYCLE.BIN/
 *.cache
 *.config
 *.db
+*.db-shm
+*.db-wal
 
 # Package directories
 *.nuget/

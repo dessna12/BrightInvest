@@ -1,0 +1,84 @@
+﻿@using BrightInvest.Application.DTOs.AssetPrices
+@using BrightInvest.Web.Services
+@inject CustomHttpClientService CustomHttpClientService
+
+
+@if (assetPrices == null || !assetPrices.Any())
+{
+    <p>No data available for the chart.</p>
+}
+else
+{
+    <MudPaper Elevation="4" Class="justify-space-between" Style="height: 50vh; width:50%; justify-content: space-between; align-items: center;">
+
+        <div class="d-flex justify-space-between align-items-center w-100 pr-3 py-3">
+            <MudText Typo="Typo.h4" Class="px-4">Price Evolution</MudText>
+
+            <MudToggleGroup T="string" SelectionMode="SelectionMode.SingleSelection" Value="@("Max")" ValueChanged="ChangeHorizonDataSeriesAsync" Color="MudColor.Primary" Size="MudBlazor.Size.Medium" FixedContent Vertical="false">
+                <MudToggleItem Value="@("Max")" Text="Max" Class="py-0" />
+                <MudToggleItem Value="@("YTD")" Text="YTD" Class="py-0" />
+                <MudToggleItem Value="@("1M")" Text="1M" Class="py-0" />
+            </MudToggleGroup>
+        </div>
+
+        <ApexChart TItem="AssetPriceDto"
+        @ref=assetChart
+        Options="options"
+        Width="@("100%")"
+        Height="@("85%")">
+
+            <ApexPointSeries TItem="AssetPriceDto"
+                             Items="assetPricesToDisplay"
+            SeriesType="@SeriesType.Area"
+            Name="Close Price"
+            XValue="@(ap => ap.Date.ToString("dd-MMM"))"
+            YValue="@(ap => ap.ClosePrice)" />
+        </ApexChart>
+    </MudPaper>
+}
+
+
+@code {
+    [Parameter] public Guid AssetId { get; set; }
+
+    private List<AssetPriceDto> assetPrices;
+    private List<AssetPriceDto> assetPricesToDisplay;
+    private string chartTitle;
+    private ApexChartOptions<AssetPriceDto> options = new();
+    private string horizonOption = "Max";
+    private ApexChart<AssetPriceDto>? assetChart;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var httpClient = CustomHttpClientService.GetHttpClient();
+        assetPrices = await httpClient.GetFromJsonAsync<List<AssetPriceDto>>($"api/asset-prices/asset-id/{AssetId}");
+        assetPricesToDisplay = assetPrices.ToList();
+    }
+
+    protected async Task ChangeHorizonDataSeriesAsync (string horizonOption) {
+
+        switch (horizonOption)
+        {
+            case "Max":
+                assetPricesToDisplay = assetPrices.ToList();
+                break;
+            case "YTD":
+                assetPricesToDisplay = assetPrices
+                    .Where(ap => ap.Date.Year == DateTime.Now.Year)
+                    .ToList();
+                break;
+            case "1M":
+                assetPricesToDisplay = assetPrices
+                    .Where(ap => ap.Date >= DateTime.Now.AddMonths(-1))
+                    .ToList();
+                break;
+            default:
+                Console.WriteLine("Invalid option.");
+                break;
+        }
+        await assetChart?.UpdateSeriesAsync();
+
+    }
+}
+
+

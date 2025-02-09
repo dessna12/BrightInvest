@@ -1,0 +1,46 @@
+﻿@page "/assets/{id}"
+@using BrightInvest.Application.DTOs.AssetPrices
+@using BrightInvest.Web.Components
+@using BrightInvest.Web.Services
+@inject NavigationManager Navigation
+@inject CustomHttpClientService CustomHttpClientService
+
+<PageTitle>Asset</PageTitle>
+
+@if (asset != null){
+    <MudText Typo="Typo.h2" Class="pb-3">@asset.Name</MudText>
+    <AssetPriceChart AssetId="asset.Id" />
+}
+else
+{
+    <MudText Typo="Typo.body1">Loading data...</MudText>
+}
+
+
+@code {
+    [Parameter]
+    public string id { get; set; }
+
+    private AssetDto asset;
+    private List<AssetPriceDto> assetPrices;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetAsset(Guid.Parse(id));
+        await GetAssetPrices(Guid.Parse(id));
+    }
+
+    protected async Task GetAsset(Guid id)
+    {
+        var httpClient = CustomHttpClientService.GetHttpClient();
+        asset = await httpClient.GetFromJsonAsync<AssetDto>($"api/assets/{id}");
+    }
+
+    private async Task GetAssetPrices(Guid assetId)
+    {
+        var httpClient = CustomHttpClientService.GetHttpClient();
+        assetPrices = await httpClient.GetFromJsonAsync<List<AssetPriceDto>>($"api/asset-prices/asset-id/{assetId}");
+    }
+
+
+}

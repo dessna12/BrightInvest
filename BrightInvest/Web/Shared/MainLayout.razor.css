@@ -9,12 +9,16 @@ main {
 }
 
 .sidebar {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    background-image: linear-gradient(180deg, #2A2A2A 0%, #444444 50%, #1e1e1e 100%);
+    /*    background-image: linear-gradient(180deg, #004d40 0%, #00695c 50%, #00281d 100%);*/
+    /*    background-image: linear-gradient(180deg, #004d40 0%, #003366 50%, #001f2e 100%);*/
+    /*    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);*/
+/*    background-image: linear-gradient(180deg, #2A2A2A 0%, #444444 50%, #1e1e1e 100%);*/
 }
 
 .top-row {
-    background-color: #f7f7f7;
-    border-bottom: 1px solid #d6d5d5;
+    background-color: #333333; 
+    border-bottom: 1px solid #444444;
     justify-content: flex-end;
     height: 3.5rem;
     display: flex;
@@ -30,6 +34,16 @@ main {
         overflow: hidden;
         text-overflow: ellipsis;
     }
+
+.navbar-logo {
+    color: #ffffff;  
+    font-size: 1.5rem;  
+    text-decoration: none;
+}
+
+.navbar-toggler {
+    color: #ffffff; 
+}
 
 @media (max-width: 640.98px) {
     .top-row:not(.auth) {
