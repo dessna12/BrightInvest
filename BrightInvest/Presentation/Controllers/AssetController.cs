@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using System.Net;
 using BrightInvest.Application.Services.Assets;
 using BrightInvest.Application.UseCases.Interfaces;
+using FluentValidation;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -72,6 +73,10 @@ namespace BrightInvest.Presentation.Controllers
 			{
 				await _assetUseCase.CreateAssetAsync(asset);
 				return Ok(asset);
+			}
+			catch (ValidationException ex)
+			{
+				return BadRequest(ex.Message);
 			}
 			catch (Exception ex)
 			{

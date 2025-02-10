@@ -2,6 +2,9 @@
 using BrightInvest.Domain.Entities;
 using BrightInvest.Application.UseCases.Interfaces;
 using AutoMapper;
+using BrightInvest.Application.DTOs.Assets;
+using FluentValidation;
+using Humanizer;
 
 namespace BrightInvest.Application.UseCases.Assets
 {
@@ -9,10 +12,14 @@ namespace BrightInvest.Application.UseCases.Assets
 	{
 		private readonly IAssetRepository _assetRepository;
 		private readonly IMapper _mapper;
-		public AssetUseCase(IAssetRepository assetRepository, IMapper mapper)
+		private readonly IValidator<AssetCreateDto> _validatorAssetCreate;
+		private readonly IValidator<AssetUpdateDto> _validatorAssetUpdate;
+		public AssetUseCase(IAssetRepository assetRepository, IMapper mapper, IValidator<AssetCreateDto> validatorAssetCreate, IValidator<AssetUpdateDto> validatorAssetUpdate)
 		{
 			_assetRepository = assetRepository;
 			_mapper = mapper;
+			_validatorAssetCreate = validatorAssetCreate;
+			_validatorAssetUpdate = validatorAssetUpdate;
 		}
 
 		public async Task<IEnumerable<AssetDto>> GetAllAssetsAsync()
@@ -28,24 +35,65 @@ namespace BrightInvest.Application.UseCases.Assets
 			//return new AssetDto(asset.Id, asset.Ticker, asset.Name, asset.Currency.ToString());
 		}
 
-		public async Task<AssetDto> CreateAssetAsync(AssetCreateDto assetCreateDto) 
+		public async Task<AssetDto> CreateAssetAsync(AssetCreateDto assetCreateDto)
 		{
+
+			var validationResult = await _validatorAssetCreate.ValidateAsync(assetCreateDto);
+			if (!validationResult.IsValid)
+			{
+				var errorMessages = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+				throw new ValidationException($"Validation failed: {string.Join("; ", errorMessages)}");
+			}
+
 			Asset asset = _mapper.Map<Asset>(assetCreateDto);
 			await _assetRepository.AddAssetAsync(asset);
 
 			return _mapper.Map<AssetDto>(asset);
 		}
 
-		public async Task<List<AssetDto>> CreateAssetsAsync(List<AssetCreateDto> assetCreateDtos)
+		public async Task<AssetsCreateResponseDto> CreateAssetsAsync(List<AssetCreateDto> assetCreateDtos)
 		{
-			var assets = _mapper.Map<List<Asset>>(assetCreateDtos);
-			await _assetRepository.AddAssetsAsync(assets);
 
-			return _mapper.Map<List<AssetDto>>(assets.Where(a => a.Id != Guid.Empty));
+			var successfulAssets = new List<AssetDto>();
+			var errorMessages = new List<string>();
+
+			foreach (var dto in assetCreateDtos)
+			{
+				var validationResult = await _validatorAssetCreate.ValidateAsync(dto);
+				if (!validationResult.IsValid)
+				{
+					var errors = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
+					errorMessages.Add($"Error processing asset {dto.Ticker}: {errors}");
+					continue;  // Skip to the next asset
+				}
+
+				var asset = _mapper.Map<Asset>(dto);
+				try
+				{
+					var assets = _mapper.Map<List<Asset>>(assetCreateDtos);
+					await _assetRepository.AddAssetsAsync(assets);
+				}
+				catch (Exception ex)
+				{
+					errorMessages.Add($"Failed to add asset {dto.Ticker}: {ex.Message}");
+				}
+			}
+
+			return new AssetsCreateResponseDto
+			{
+				Success = successfulAssets,
+				Errors = errorMessages
+			};
 		}
 
 		public async Task<bool> UpdateAssetAsync(AssetUpdateDto assetUpdateDto)
 		{
+			var validationResult = await _validatorAssetUpdate.ValidateAsync(assetUpdateDto);
+			if (!validationResult.IsValid)
+			{
+				var errorMessages = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+				throw new ValidationException($"Validation failed: {string.Join("; ", errorMessages)}");
+			}
 			Asset asset = _mapper.Map<Asset>(assetUpdateDto);
 			return await _assetRepository.UpdateAssetAsync(asset);
 		}

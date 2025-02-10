@@ -13,6 +13,7 @@ using BrightInvest.Infrastructure.DataBase;
 using BrightInvest.Infrastructure.Repositories;
 using BrightInvest.Infrastructure.Repository;
 using BrightInvest.Web.Services;
+using FluentValidation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
@@ -47,6 +48,9 @@ builder.Services.AddScoped<IAlphaVantageService, AlphaVantageService>();
 
 builder.Services.AddScoped<ICurrencyRepository, CurrencyRepository>();
 builder.Services.AddScoped<ICurrencyUseCase, CurrencyUseCase>();
+
+builder.Services.AddScoped<IValidator<AssetCreateDto>, AssetCreateDtoValidator>();
+builder.Services.AddScoped<IValidator<AssetUpdateDto>, AssetUpdateDtoValidator>();
 
 builder.Services.AddScoped<ExcelService>();
 
