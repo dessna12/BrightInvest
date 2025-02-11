@@ -251,7 +251,7 @@ else
         }
         else
         {
-            Snackbar.Add("Failed to add asset", Severity.Error);
+            Snackbar.Add($"Failed to add asset: {response.Content.ReadAsStringAsync()}", Severity.Error);
         }
     }
 
