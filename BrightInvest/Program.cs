@@ -10,6 +10,7 @@ using BrightInvest.Application.UseCases.Currencies;
 using BrightInvest.Application.UseCases.Interfaces;
 using BrightInvest.Domain.Interfaces;
 using BrightInvest.Infrastructure.DataBase;
+using BrightInvest.Infrastructure.DependencyInjections;
 using BrightInvest.Infrastructure.Repositories;
 using BrightInvest.Infrastructure.Repository;
 using BrightInvest.Web.Services;
@@ -36,23 +37,7 @@ builder.Services.AddMudServices();
 
 builder.Services.AddScoped<CustomHttpClientService>();
 
-//builder.Services.AddScoped<BrightInvest.Application.Services.Asset.IAssetUseCase, AssetService>();
-builder.Services.AddScoped<IAssetRepository, AssetRepository>();
-builder.Services.AddScoped<IAssetUseCase, AssetUseCase>();
-
-//builder.Services.AddScoped<IAssetPriceService, AssetPriceService>();
-builder.Services.AddScoped<IAssetPriceRepository, AssetPriceRepository>();
-builder.Services.AddScoped<IAssetPriceUseCase, AssetPriceUseCase>();
-
-builder.Services.AddScoped<IAlphaVantageService, AlphaVantageService>();
-
-builder.Services.AddScoped<ICurrencyRepository, CurrencyRepository>();
-builder.Services.AddScoped<ICurrencyUseCase, CurrencyUseCase>();
-
-builder.Services.AddScoped<IValidator<AssetCreateDto>, AssetCreateDtoValidator>();
-builder.Services.AddScoped<IValidator<AssetUpdateDto>, AssetUpdateDtoValidator>();
-
-builder.Services.AddScoped<ExcelService>();
+builder.Services.AddApplicationServices();
 
 builder.Services.AddControllers(options =>
 {
