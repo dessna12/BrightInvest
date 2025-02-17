@@ -1,22 +1,9 @@
 using System.Globalization;
 using ApexCharts;
 using BrightInvest.Application.Mappings;
-using BrightInvest.Application.Services.AlphaVantage;
-using BrightInvest.Application.Services.Date;
-using BrightInvest.Application.Services.Excel;
-using BrightInvest.Application.UseCases.AssetPrices;
-using BrightInvest.Application.UseCases.Assets;
-using BrightInvest.Application.UseCases.Currencies;
-using BrightInvest.Application.UseCases.Interfaces;
-using BrightInvest.Domain.Interfaces;
 using BrightInvest.Infrastructure.DataBase;
 using BrightInvest.Infrastructure.DependencyInjections;
-using BrightInvest.Infrastructure.Repositories;
-using BrightInvest.Infrastructure.Repository;
 using BrightInvest.Web.Services;
-using FluentValidation;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 

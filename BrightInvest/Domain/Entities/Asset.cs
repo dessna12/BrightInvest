@@ -28,4 +28,15 @@ public class Asset : Entity
 	public Asset(string ticker, string name, Currency currency, Country country, Sector sector) : this(Guid.NewGuid(), ticker, name, currency, country, sector )
 	{
 	}
+
+	public AssetMetrics CalculateMetrics(IAssetIndicatorService indicatorService, List<decimal> marketReturns, double riskFreeRate)
+	{
+		return new AssetMetrics(
+			indicatorService.CalculateYTDReturn(LastPrice, FirstPriceOfYear),
+			indicatorService.CalculateVolatility(_priceReturns.Select(p => (double)p).ToList()),
+			indicatorService.CalculateBeta(_priceReturns.Select(p => (double)p).ToList(), marketReturns.Select(m => (double)m).ToList()),
+			indicatorService.CalculateSharpeRatio(LastPrice, riskFreeRate, indicatorService.CalculateVolatility(_priceReturns.Select(p => (double)p).ToList()))
+		);
+	}
+
 }
