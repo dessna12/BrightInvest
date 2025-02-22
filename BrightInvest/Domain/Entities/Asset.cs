@@ -29,14 +29,6 @@ public class Asset : Entity
 	{
 	}
 
-	public AssetMetrics CalculateMetrics(IAssetIndicatorService indicatorService, List<decimal> marketReturns, double riskFreeRate)
-	{
-		return new AssetMetrics(
-			indicatorService.CalculateYTDReturn(LastPrice, FirstPriceOfYear),
-			indicatorService.CalculateVolatility(_priceReturns.Select(p => (double)p).ToList()),
-			indicatorService.CalculateBeta(_priceReturns.Select(p => (double)p).ToList(), marketReturns.Select(m => (double)m).ToList()),
-			indicatorService.CalculateSharpeRatio(LastPrice, riskFreeRate, indicatorService.CalculateVolatility(_priceReturns.Select(p => (double)p).ToList()))
-		);
-	}
+
 
 }

@@ -1,7 +1,8 @@
-interface IAssetIndicatorService
+public interface IAssetIndicatorService
 {
-	decimal CalculateYTDReturn(decimal lastPrice, decimal firstPriceOfYear);
-	decimal CalculateBeta(List<decimal> stockReturns, List<decimal> marketReturns);
-	public decimal CalculateSharpeRatio(decimal portfolioReturn, double riskFreeRate, decimal volatility);
+	public decimal CalculateReturn(List<decimal> prices);
+	public decimal CalculateVolatility(List<decimal> prices);
+	public decimal CalculateBeta(List<decimal> stockPrices, List<decimal> marketPrices);
+	public decimal CalculateSharpeRatio(List<decimal> portfolioPrices, double riskFreeRate);
 
 }
