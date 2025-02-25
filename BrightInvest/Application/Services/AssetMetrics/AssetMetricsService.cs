@@ -5,7 +5,7 @@ using BrightInvest.Domain.Entities;
 
 namespace BrightInvest.Application.Services.AssetMetrics
 {
-	public class AssetMetricsService
+	public class AssetMetricsService : IAssetMetricsService
 	{
 		private readonly IAssetIndicatorService _assetIndicatorService;
 

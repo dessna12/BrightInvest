@@ -1,0 +1,64 @@
+﻿@using BrightInvest.Application.DTOs.AssetMetrics
+@using BrightInvest.Web.Services
+@inject CustomHttpClientService CustomHttpClientService
+
+@if (assetMetricsJson == null)
+{
+    <p>No data available for metrics</p>
+}
+else
+{
+    <MudPaper Elevation="4" Class="justify-space-between" Style="height: 50vh; width: 30%; justify-content: space-between; align-items: center;">
+        <div class="d-flex justify-space-between align-items-center w-100 pr-3 py-3">
+            <MudText Typo="Typo.h4" Class="px-4">Asset Metrics</MudText>
+        </div>
+
+        <MudTable Items="@financialMetrics" Elevation="0">
+            <RowTemplate>
+                <MudTd>@context.Metric</MudTd>
+                <MudTd>@context.FormattedValue</MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudPaper>
+}
+
+
+
+@code {
+    [Parameter] public Guid AssetId { get; set; }
+
+    private AssetMetricsDto? assetMetricsJson;
+    private List<FinancialMetric>? financialMetrics;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var httpClient = CustomHttpClientService.GetHttpClient();
+        assetMetricsJson = await httpClient.GetFromJsonAsync<AssetMetricsDto>($"api/assets/{AssetId}/metrics");
+
+        if (assetMetricsJson != null)
+        {
+            financialMetrics = new List<FinancialMetric>
+            {
+                new FinancialMetric { Metric = "Return", Value = assetMetricsJson.YTDReturn },
+                new FinancialMetric { Metric = "Volatility", Value = assetMetricsJson.Volatility },
+                new FinancialMetric { Metric = "Sharpe Ratio", Value = assetMetricsJson.SharpeRatio },
+                new FinancialMetric { Metric = "Beta", Value = assetMetricsJson.Beta }
+            };
+        }
+    }
+
+
+    public class FinancialMetric
+    {
+        public string Metric { get; set; }
+        public decimal Value { get; set; }
+
+        public string FormattedValue => Metric switch
+        {
+            "Volatility" or "Return" => Value.ToString("P2"), // Percentage format
+            _ => Value.ToString("F2") // Regular number with 2 decimals 
+        };
+    }
+
+}

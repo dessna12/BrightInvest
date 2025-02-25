@@ -9,7 +9,11 @@
 
 @if (asset != null){
     <MudText Typo="Typo.h2" Class="pb-3">@asset.Name</MudText>
-    <AssetPriceChart AssetId="asset.Id" />
+
+    <div class="d-flex gap-3 justify-content-start w-100">
+        <AssetPriceChart AssetId="asset.Id" />
+        <AssetMetrics AssetId="asset.Id" />
+    </div>
 }
 else
 {
