@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Net;
+using BrightInvest.Application.DTOs.AssetMetrics;
 using BrightInvest.Application.Services.Assets;
 using BrightInvest.Application.UseCases.Interfaces;
+using FluentValidation;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,10 +17,12 @@ namespace BrightInvest.Presentation.Controllers
 	{
 
 		private readonly IAssetUseCase _assetUseCase;
+		private readonly IAssetMetricsUseCase _assetMetricsUseCase;
 
-		public AssetController(IAssetUseCase assetUseCase)
+		public AssetController(IAssetUseCase assetUseCase, IAssetMetricsUseCase assetMetricsUseCase)
 		{
 			_assetUseCase = assetUseCase ?? throw new ArgumentNullException(nameof(assetUseCase));
+			_assetMetricsUseCase = assetMetricsUseCase ?? throw new ArgumentNullException(nameof(assetMetricsUseCase));
 		}
 
 		// GET: api/assets/
@@ -59,6 +63,29 @@ namespace BrightInvest.Presentation.Controllers
 			}
 		}
 
+		// GET: api/assets/id/metrics
+		[HttpGet("{id}/metrics")]
+		public async Task<ActionResult<AssetMetricsDto>> GetAssetMetrics(Guid id)
+		{
+
+			if (id == Guid.Empty)
+				return BadRequest("Invalid ID: ID cannot be an empty GUID.");
+			
+			try
+			{
+				var assetMetrics = await _assetMetricsUseCase.GetAssetMetricsByAssetId(id);
+				return Ok(assetMetrics);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return NotFound();
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
+			}
+		}
+
 		//POST: api/assets
 		[HttpPost]
 		public async Task<ActionResult<AssetDto>> PostAsset([FromBody] AssetCreateDto asset)
@@ -72,6 +99,10 @@ namespace BrightInvest.Presentation.Controllers
 			{
 				await _assetUseCase.CreateAssetAsync(asset);
 				return Ok(asset);
+			}
+			catch (ValidationException ex)
+			{
+				return BadRequest(ex.Message);
 			}
 			catch (Exception ex)
 			{

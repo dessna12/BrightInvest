@@ -1,37 +1,42 @@
-﻿@page "/excel-module"
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using System.IO
 @using BrightInvest.Application.DTOs.Assets
 @using BrightInvest.Application.Services.Excel
 @using BrightInvest.Web.Services
 
-@inject NavigationManager Navigation
 @inject CustomHttpClientService CustomHttpClientService
 @inject ExcelService ExcelService
 @inject ISnackbar Snackbar
 
+<div class="d-flex flex-column" style="max-width: 400px; margin: 0 auto; padding: 20px;">
+    <MudText Typo="Typo.h6" Class="mb-2">Upload Excel File</MudText>
+    <MudItem>
+        <InputFile OnChange="HandleFileUpload" accept=".xlsx" Class="mb-3" />
+    </MudItem>
+    <MudItem>
+        <MudButton OnClick="ProcessFile" Disabled="@(_selectedFile == null)" Variant="Variant.Filled" Color="MudBlazor.Color.Primary" StartIcon="@Icons.Material.Filled.Upload" >
+            Process File
+        </MudButton>
+    </MudItem>
+    @if (_isProcessing)
+    {
+        <MudProgressCircular Indeterminate="true" Size="MudBlazor.Size.Large" Class="mt-3" />
+    }
+</div>
 
-<PageTitle>Excel</PageTitle>
 
-
-<MudCard>
-    <MudCardContent>
-        <MudText Typo="Typo.h5">Upload Excel File</MudText>
-        <InputFile OnChange="HandleFileUpload" accept=".xlsx" />
-        <MudButton OnClick="ProcessFile" Disabled="@(_selectedFile == null)">Process File</MudButton>
-
-        @if (_isProcessing)
-        {
-            <MudProgressCircular Indeterminate="true" />
-        }
-    </MudCardContent>
-</MudCard>
 
 @code {
-    private IBrowserFile? _selectedFile;
+    private IBrowserFile _selectedFile;
     private bool _isProcessing = false;
 
     private async Task HandleFileUpload(InputFileChangeEventArgs e)
     {
-        _selectedFile = e.File;
+        var file = e.File;
+        if (file != null)
+        {
+            _selectedFile = file;
+        }
     }
 
     private async Task ProcessFile()
