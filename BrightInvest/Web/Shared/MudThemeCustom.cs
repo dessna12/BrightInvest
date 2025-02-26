@@ -21,7 +21,7 @@ public static class CustomMudTheme
 			TextPrimary = "#1e4243",
 			TextSecondary = "#226163",
 			ActionDefault = "#339899",
-			ActionDisabled = "#d5f2ef",
+			ActionDisabled = "#b0d7d0",
 			ActionDisabledBackground = "#abe4e0"
 		},
 		Typography = new Typography()

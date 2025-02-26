@@ -1,20 +1,9 @@
 using System.Globalization;
 using ApexCharts;
 using BrightInvest.Application.Mappings;
-using BrightInvest.Application.Services.AlphaVantage;
-using BrightInvest.Application.Services.Date;
-using BrightInvest.Application.Services.Excel;
-using BrightInvest.Application.UseCases.AssetPrices;
-using BrightInvest.Application.UseCases.Assets;
-using BrightInvest.Application.UseCases.Currencies;
-using BrightInvest.Application.UseCases.Interfaces;
-using BrightInvest.Domain.Interfaces;
 using BrightInvest.Infrastructure.DataBase;
-using BrightInvest.Infrastructure.Repositories;
-using BrightInvest.Infrastructure.Repository;
+using BrightInvest.Infrastructure.DependencyInjections;
 using BrightInvest.Web.Services;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 
@@ -35,20 +24,7 @@ builder.Services.AddMudServices();
 
 builder.Services.AddScoped<CustomHttpClientService>();
 
-//builder.Services.AddScoped<BrightInvest.Application.Services.Asset.IAssetUseCase, AssetService>();
-builder.Services.AddScoped<IAssetRepository, AssetRepository>();
-builder.Services.AddScoped<IAssetUseCase, AssetUseCase>();
-
-//builder.Services.AddScoped<IAssetPriceService, AssetPriceService>();
-builder.Services.AddScoped<IAssetPriceRepository, AssetPriceRepository>();
-builder.Services.AddScoped<IAssetPriceUseCase, AssetPriceUseCase>();
-
-builder.Services.AddScoped<IAlphaVantageService, AlphaVantageService>();
-
-builder.Services.AddScoped<ICurrencyRepository, CurrencyRepository>();
-builder.Services.AddScoped<ICurrencyUseCase, CurrencyUseCase>();
-
-builder.Services.AddScoped<ExcelService>();
+builder.Services.AddApplicationServices();
 
 builder.Services.AddControllers(options =>
 {

@@ -4,12 +4,17 @@
 @using BrightInvest.Web.Services
 @inject NavigationManager Navigation
 @inject CustomHttpClientService CustomHttpClientService
+@inject ISnackbar Snackbar
 
 <PageTitle>Asset</PageTitle>
 
 @if (asset != null){
     <MudText Typo="Typo.h2" Class="pb-3">@asset.Name</MudText>
-    <AssetPriceChart AssetId="asset.Id" />
+
+    <div class="d-flex gap-3 justify-content-start w-100">
+        <AssetPriceChart AssetId="asset.Id" OnHorizonChanged="@UpdateHorizon"/>
+        <AssetMetrics AssetId="asset.Id" Horizon=@horizon />
+    </div>
 }
 else
 {
@@ -21,8 +26,10 @@ else
     [Parameter]
     public string id { get; set; }
 
+
     private AssetDto asset;
     private List<AssetPriceDto> assetPrices;
+    private string horizon = "Max";
 
     protected override async Task OnInitializedAsync()
     {
@@ -39,8 +46,20 @@ else
     private async Task GetAssetPrices(Guid assetId)
     {
         var httpClient = CustomHttpClientService.GetHttpClient();
-        assetPrices = await httpClient.GetFromJsonAsync<List<AssetPriceDto>>($"api/asset-prices/asset-id/{assetId}");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"api/asset-prices/asset-id/{assetId}");
+        var response = await httpClient.SendAsync(request);
+
+        if (!response.IsSuccessStatusCode){
+            var errorContent = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+            string errorMessage = errorContent?.GetValueOrDefault("message") ?? "Unknown error";
+            Snackbar.Add($"Failed to fetch prices: {errorMessage}", Severity.Error);
+            return;
+        }else{
+            assetPrices = await response.Content.ReadFromJsonAsync<List<AssetPriceDto>>();
+        }    
     }
 
-
+    private void UpdateHorizon(string newHorizon){
+        horizon = newHorizon;
+    }
 }

@@ -28,4 +28,7 @@ public class Asset : Entity
 	public Asset(string ticker, string name, Currency currency, Country country, Sector sector) : this(Guid.NewGuid(), ticker, name, currency, country, sector )
 	{
 	}
+
+
+
 }

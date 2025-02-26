@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 using BrightInvest.Application.DTOs.AssetPrices;
+using BrightInvest.Application.Exceptions;
 using BrightInvest.Application.Services;
 using BrightInvest.Application.Services.AssetPrices;
 using BrightInvest.Application.UseCases.Interfaces;
@@ -73,6 +74,10 @@ namespace BrightInvest.Presentation.Controllers
 			{
 				return NotFound();
 			}
+			catch (AlphaVantageException ex)
+			{
+				return StatusCode(500, new { message = "An error occured while trying to fetch prices", details = ex.Message });
+			}
 			catch (Exception ex)
 			{
 				return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
@@ -91,6 +96,10 @@ namespace BrightInvest.Presentation.Controllers
 			catch (KeyNotFoundException ex)
 			{
 				return NotFound();
+			}
+			catch(AlphaVantageException ex)
+			{
+				return StatusCode(500, new { message = "An error occured while trying to fetch prices", details = ex.Message });
 			}
 			catch (Exception ex)
 			{

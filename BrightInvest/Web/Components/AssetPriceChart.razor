@@ -40,6 +40,7 @@ else
 
 @code {
     [Parameter] public Guid AssetId { get; set; }
+    [Parameter] public EventCallback<string> OnHorizonChanged { get; set; }
 
     private List<AssetPriceDto> assetPrices;
     private List<AssetPriceDto> assetPricesToDisplay;
@@ -77,6 +78,7 @@ else
                 break;
         }
         await assetChart?.UpdateSeriesAsync();
+        OnHorizonChanged.InvokeAsync(horizonOption);
 
     }
 }
