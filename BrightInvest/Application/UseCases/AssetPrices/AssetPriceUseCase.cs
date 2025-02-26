@@ -7,6 +7,9 @@ using BrightInvest.Domain.Entities;
 using BrightInvest.Domain.Interfaces;
 using BrightInvest.Infrastructure.Repository;
 using BrightInvest.Web.Pages;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Elfie.Model;
+using NuGet.ContentModel;
 
 namespace BrightInvest.Application.UseCases.AssetPrices
 {
@@ -43,6 +46,16 @@ namespace BrightInvest.Application.UseCases.AssetPrices
 		public async Task<IEnumerable<AssetPriceDto>> GetAllAssetPricesByAssetIdAsync(Guid assetId)
 		{
 			var assetPrices = await _assetPriceRepository.GetAllAssetPricesByAssetIdAsync(assetId);
+			
+			if (assetPrices == null || !assetPrices.Any())
+			{
+				var asset = await _assetRepository.GetAssetByIdAsync(assetId);
+				string symbol = asset.Ticker;
+				await FetchAssetPrices(symbol, null);
+			}
+
+			assetPrices = await _assetPriceRepository.GetAllAssetPricesByAssetIdAsync(assetId);
+
 			return assetPrices
 					.OrderBy(assetPrice => assetPrice.Date)
 					.Select(assetPrice => MapToAssetPriceDto(assetPrice));
@@ -69,6 +82,16 @@ namespace BrightInvest.Application.UseCases.AssetPrices
 
 			var assetPricesDTO = await GetAllAssetPricesByAssetIdAsync(asset.Id);
 			return assetPricesDTO;
+		}
+
+		private async Task FetchAssetPrices(string symbol, DateTime? fromDate = null)
+		{
+			var asset = await _assetRepository.GetAssetBySymbolAsync(symbol);
+			var stockDataList = await _alphaVantageService.FetchAllStockPricesAsync(symbol, fromDate);
+
+			// Add in DB
+			var assetPricesToAdd = stockDataList.Select(s => new AssetPrice(asset.Id, s.Date, s.ClosePrice)).ToList();
+			await _assetPriceRepository.AddAssetPricesAsync(assetPricesToAdd);
 		}
 
 		public async Task<AssetPriceDto> CreateAssetPriceAsync(AssetPriceCreateDto assetCreateDto)

@@ -28,7 +28,7 @@ namespace BrightInvest.Application.Services.AlphaVantage
 				var httpClient = _customHttpClientService.GetHttpClient();
 				var response = await httpClient.GetStringAsync(url);
 
-				if (string.IsNullOrWhiteSpace(response))
+				if (string.IsNullOrWhiteSpace(response) || response.Contains("error", StringComparison.OrdinalIgnoreCase))
 					throw new AlphaVantageException($"Error fetching data for symbol {symbol}");
 
 				var stockData = JsonSerializer.Deserialize<AlphaVantageResponseDto>(response);

@@ -4,6 +4,7 @@
 @using BrightInvest.Web.Services
 @inject NavigationManager Navigation
 @inject CustomHttpClientService CustomHttpClientService
+@inject ISnackbar Snackbar
 
 <PageTitle>Asset</PageTitle>
 
@@ -25,13 +26,19 @@ else
     [Parameter]
     public string id { get; set; }
 
+
     private AssetDto asset;
     private List<AssetPriceDto> assetPrices;
 
     protected override async Task OnInitializedAsync()
     {
         await GetAsset(Guid.Parse(id));
+        try{
         await GetAssetPrices(Guid.Parse(id));
+
+        }catch(Exception ex){
+            Snackbar.Add($"Failed to fetch prices", Severity.Error);
+        }
     }
 
     protected async Task GetAsset(Guid id)
@@ -43,8 +50,19 @@ else
     private async Task GetAssetPrices(Guid assetId)
     {
         var httpClient = CustomHttpClientService.GetHttpClient();
-        assetPrices = await httpClient.GetFromJsonAsync<List<AssetPriceDto>>($"api/asset-prices/asset-id/{assetId}");
+        
+        var request = new HttpRequestMessage(HttpMethod.Get, $"api/asset-prices/asset-id/{assetId}");
+        var response = await httpClient.SendAsync(request);
+        // assetPrices = await httpClient.GetFromJsonAsync<List<AssetPriceDto>>($"api/asset-prices/asset-id/{assetId}");
+        if (!response.IsSuccessStatusCode){
+            var errorContent = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+            string errorMessage = errorContent?.GetValueOrDefault("message") ?? "Unknown error";
+            Snackbar.Add($"Failed to fetch prices: {errorMessage}", Severity.Error);
+            return;
+        }
+
+        assetPrices = await response.Content.ReadFromJsonAsync<List<AssetPriceDto>>();
+
+    
     }
-
-
 }

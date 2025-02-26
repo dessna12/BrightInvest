@@ -24,7 +24,7 @@ public class AssetIndicatorService : IAssetIndicatorService
 		if (prices.Count < 2) return 0m;
 
 		var returns = ConvertPricesToReturns(prices);
-		return (decimal)Math.Sqrt((double)returns.Average(r => r * r));
+		return (decimal)Math.Sqrt((double)returns.Average(r => r * r)*252);
 	}
 
 	public decimal CalculateBeta(List<decimal> stockPrices, List<decimal> marketPrices)
