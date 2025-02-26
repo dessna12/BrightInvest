@@ -10,6 +10,7 @@ namespace BrightInvest.Application.UseCases.FinancialIndicators
 	{
 		private readonly IAssetMetricsService _assetMetricsService;
 		private readonly IAssetPriceRepository _assetPriceRepository;
+		private const double RISK_FREE_RATE = 0.0290d;
 		public AssetMetricsUseCase(IAssetMetricsService assetMetricsService, IAssetPriceRepository assetPriceRepository) { 
 			_assetMetricsService = assetMetricsService;
 			_assetPriceRepository = assetPriceRepository;
@@ -18,7 +19,12 @@ namespace BrightInvest.Application.UseCases.FinancialIndicators
 		public async Task<AssetMetricsDto> GetAssetMetricsByAssetId(Guid id)
 		{
 			IEnumerable<AssetPrice?> assetPrices = await _assetPriceRepository.GetAllAssetPricesByAssetIdAsync(id);
-			AssetMetricsDto assetMetricDto = _assetMetricsService.CalculateMetrics(assetPrices, assetPrices, 0.0290d);
+			AssetMetricsDto assetMetricDto = new AssetMetricsDto(
+				_assetMetricsService.CalculateMetrics(assetPrices, assetPrices, RISK_FREE_RATE, "1M"),
+				_assetMetricsService.CalculateMetrics(assetPrices, assetPrices, RISK_FREE_RATE, "YTD"),
+				_assetMetricsService.CalculateMetrics(assetPrices, assetPrices, RISK_FREE_RATE, "Max")
+			);
+				
 			return assetMetricDto;
 		}
 

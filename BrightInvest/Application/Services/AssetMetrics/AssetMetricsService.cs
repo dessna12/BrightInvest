@@ -15,16 +15,37 @@ namespace BrightInvest.Application.Services.AssetMetrics
 			_assetIndicatorService = assetIndicatorService;
 		}
 
-		public AssetMetricsDto CalculateMetrics(IEnumerable<AssetPrice> prices, IEnumerable<AssetPrice> marketPrices, double riskFreeRate)
+		public AssetMetricHorizon CalculateMetrics(IEnumerable<AssetPrice> prices, IEnumerable<AssetPrice> marketPrices, double riskFreeRate, string horizon)
 		{
 			DateTime startofYearDate = new DateTime(DateTime.UtcNow.Year, 1, 1);
+			DateTime oneMonthAgoDate = DateTime.UtcNow.AddMonths(-1);
 
-			var orderedPrices = prices.OrderBy(p => p.Date).Select(p => p.ClosePrice).ToList();
-			var orderedYTDPrices = prices.OrderBy(p => p.Date).Where(p => p.Date >= startofYearDate).Select(p => p.ClosePrice).ToList();
-			var orderedMarketPrices = marketPrices.OrderBy(p => p.Date).Select(p => p.ClosePrice).ToList();
+			List<decimal> orderedPrices;
+			List<decimal> orderedMarketPrices;
 
-			return new AssetMetricsDto(
-				_assetIndicatorService.CalculateReturn(orderedYTDPrices),
+			switch (horizon)
+			{
+				case "Max":
+					orderedPrices = prices.OrderBy(p => p.Date).Select(p => p.ClosePrice).ToList();
+					orderedMarketPrices = marketPrices.OrderBy(p => p.Date).Select(p => p.ClosePrice).ToList();
+					break;
+				case "YTD":
+					orderedPrices = prices.OrderBy(p => p.Date).Where(p => p.Date >= startofYearDate).Select(p => p.ClosePrice).ToList();
+					orderedMarketPrices = marketPrices.OrderBy(p => p.Date).Where(p => p.Date >= startofYearDate).Select(p => p.ClosePrice).ToList();
+					break;
+				case "1M":
+					orderedPrices = prices.OrderBy(p => p.Date).Where(p => p.Date >= oneMonthAgoDate).Select(p => p.ClosePrice).ToList();
+					orderedMarketPrices = marketPrices.OrderBy(p => p.Date).Where(p => p.Date >= oneMonthAgoDate).Select(p => p.ClosePrice).ToList();
+					break;
+				default:
+					orderedPrices = prices.OrderBy(p => p.Date).Where(p => p.Date >= startofYearDate).Select(p => p.ClosePrice).ToList();
+					orderedMarketPrices = marketPrices.OrderBy(p => p.Date).Where(p => p.Date >= startofYearDate).Select(p => p.ClosePrice).ToList();
+					break;
+			}
+
+
+			return new AssetMetricHorizon(
+				_assetIndicatorService.CalculateReturn(orderedPrices),
 				_assetIndicatorService.CalculateVolatility(orderedPrices),
 				_assetIndicatorService.CalculateBeta(orderedPrices, orderedMarketPrices),
 				_assetIndicatorService.CalculateSharpeRatio(orderedPrices, riskFreeRate)

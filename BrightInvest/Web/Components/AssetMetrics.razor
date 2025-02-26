@@ -11,9 +11,10 @@ else
     <MudPaper Elevation="4" Class="justify-space-between" Style="height: 50vh; width: 30%; justify-content: space-between; align-items: center;">
         <div class="d-flex justify-space-between align-items-center w-100 pr-3 py-3">
             <MudText Typo="Typo.h4" Class="px-4">Asset Metrics</MudText>
+            <MudButton Variant="Variant.Text" Color="MudColor.Primary">@Horizon</MudButton>
         </div>
 
-        <MudTable Items="@financialMetrics" Elevation="0">
+        <MudTable Items="@selectedFinancialMetrics" Elevation="0">
             <RowTemplate>
                 <MudTd>@context.Metric</MudTd>
                 <MudTd>@context.FormattedValue</MudTd>
@@ -26,10 +27,12 @@ else
 
 @code {
     [Parameter] public Guid AssetId { get; set; }
+    [Parameter] public string Horizon { get; set; }
 
     private AssetMetricsDto? assetMetricsJson;
     private List<FinancialMetric>? financialMetrics;
-
+    private List<FinancialMetric>? selectedFinancialMetrics;
+    private List<FinancialMetricsByHorizon>? financialMetricsByHorizon;
 
     protected override async Task OnInitializedAsync()
     {
@@ -38,14 +41,29 @@ else
 
         if (assetMetricsJson != null)
         {
-            financialMetrics = new List<FinancialMetric>
+            financialMetricsByHorizon = new List<FinancialMetricsByHorizon>
             {
-                new FinancialMetric { Metric = "Return", Value = assetMetricsJson.YTDReturn },
-                new FinancialMetric { Metric = "Volatility", Value = assetMetricsJson.Volatility },
-                new FinancialMetric { Metric = "Sharpe Ratio", Value = assetMetricsJson.SharpeRatio },
-                new FinancialMetric { Metric = "Beta", Value = assetMetricsJson.Beta }
+                new FinancialMetricsByHorizon("1M", assetMetricsJson.OneMonth),
+                new FinancialMetricsByHorizon("YTD", assetMetricsJson.YTD),
+                new FinancialMetricsByHorizon("Max", assetMetricsJson.Max)
             };
+            
+            
+            
+            // financialMetrics = new List<FinancialMetric>
+            // {
+            //     new FinancialMetric { Metric = "Annualised Return", Value = assetMetricsJson.AnnualisedReturn },
+            //     new FinancialMetric { Metric = "Volatility", Value = assetMetricsJson.Volatility },
+            //     new FinancialMetric { Metric = "Sharpe Ratio", Value = assetMetricsJson.SharpeRatio },
+            //     new FinancialMetric { Metric = "Beta", Value = assetMetricsJson.Beta }
+            // };
         }
+    }
+
+    protected override void OnParametersSet()
+    {
+        selectedFinancialMetrics = financialMetricsByHorizon
+            .FirstOrDefault(h => h.Horizon == Horizon)?.Metrics ?? new List<FinancialMetric>();
     }
 
 
@@ -56,9 +74,28 @@ else
 
         public string FormattedValue => Metric switch
         {
-            "Volatility" or "Return" => Value.ToString("P2"), // Percentage format
+            "Volatility" or "Annualised Return" => Value.ToString("P2"), // Percentage format
             _ => Value.ToString("F2") // Regular number with 2 decimals 
         };
+    }
+
+
+    public class FinancialMetricsByHorizon
+    {
+        public string Horizon { get; }
+        public List<FinancialMetric> Metrics { get; }
+
+        public FinancialMetricsByHorizon(string horizon, AssetMetricHorizon assetMetrics)
+        {
+            Horizon = horizon;
+            Metrics = new List<FinancialMetric>
+        {
+            new FinancialMetric { Metric = "Annualised Return", Value = assetMetrics.AnnualisedReturn },
+            new FinancialMetric { Metric = "Volatility", Value = assetMetrics.Volatility },
+            new FinancialMetric { Metric = "Sharpe Ratio", Value = assetMetrics.SharpeRatio },
+            new FinancialMetric { Metric = "Beta", Value = assetMetrics.Beta }
+        };
+        }
     }
 
 }

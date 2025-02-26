@@ -92,7 +92,6 @@
         {
             var httpClient = CustomHttpClientService.GetHttpClient();
             assetPrices = await httpClient.GetFromJsonAsync<List<AssetPriceDto>>($"api/asset-prices/ticker/{symbol}");
-            Snackbar.Add("Prices fetched successfully!", Severity.Success);
         }catch (Exception ex) {
             Snackbar.Add($"Failed to update asset: {ex.Message}", Severity.Error);
         }

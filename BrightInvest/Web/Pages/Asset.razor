@@ -12,8 +12,8 @@
     <MudText Typo="Typo.h2" Class="pb-3">@asset.Name</MudText>
 
     <div class="d-flex gap-3 justify-content-start w-100">
-        <AssetPriceChart AssetId="asset.Id" />
-        <AssetMetrics AssetId="asset.Id" />
+        <AssetPriceChart AssetId="asset.Id" OnHorizonChanged="@UpdateHorizon"/>
+        <AssetMetrics AssetId="asset.Id" Horizon=@horizon />
     </div>
 }
 else
@@ -29,16 +29,12 @@ else
 
     private AssetDto asset;
     private List<AssetPriceDto> assetPrices;
+    private string horizon = "Max";
 
     protected override async Task OnInitializedAsync()
     {
         await GetAsset(Guid.Parse(id));
-        try{
         await GetAssetPrices(Guid.Parse(id));
-
-        }catch(Exception ex){
-            Snackbar.Add($"Failed to fetch prices", Severity.Error);
-        }
     }
 
     protected async Task GetAsset(Guid id)
@@ -50,19 +46,20 @@ else
     private async Task GetAssetPrices(Guid assetId)
     {
         var httpClient = CustomHttpClientService.GetHttpClient();
-        
         var request = new HttpRequestMessage(HttpMethod.Get, $"api/asset-prices/asset-id/{assetId}");
         var response = await httpClient.SendAsync(request);
-        // assetPrices = await httpClient.GetFromJsonAsync<List<AssetPriceDto>>($"api/asset-prices/asset-id/{assetId}");
+
         if (!response.IsSuccessStatusCode){
             var errorContent = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
             string errorMessage = errorContent?.GetValueOrDefault("message") ?? "Unknown error";
             Snackbar.Add($"Failed to fetch prices: {errorMessage}", Severity.Error);
             return;
-        }
+        }else{
+            assetPrices = await response.Content.ReadFromJsonAsync<List<AssetPriceDto>>();
+        }    
+    }
 
-        assetPrices = await response.Content.ReadFromJsonAsync<List<AssetPriceDto>>();
-
-    
+    private void UpdateHorizon(string newHorizon){
+        horizon = newHorizon;
     }
 }
