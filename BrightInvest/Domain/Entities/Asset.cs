@@ -15,6 +15,8 @@ public class Asset : Entity
 	public List<AssetPrice> Prices { get; private set; } = new();
 
 
+	public Asset() { }
+
 	[JsonConstructor]
 	public Asset(Guid id, string ticker, string name, Currency currency, Country country, Sector sector) : base(id)
 	{
