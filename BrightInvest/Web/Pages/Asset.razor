@@ -8,8 +8,17 @@
 
 <PageTitle>Asset</PageTitle>
 
+
 @if (asset != null){
-    <MudText Typo="Typo.h2" Class="pb-3">@asset.Name</MudText>
+
+    <div class="d-flex flex-row justify-space-between align-center  w-100" style="width:81%;">
+        <MudText Typo = "Typo.h2">@asset.Name (@asset.Ticker)</MudText>
+        <div class="d-flex gap-3 align-items-center">
+            <MudButton Variant = "Variant.Filled" Color="MudColor.Success" Style="width: 120px; height: 40px;">Buy</MudButton>
+            <MudButton Variant = "Variant.Filled" Color="MudColor.Error" Style="width: 120px; height: 40px;">Sell</MudButton>
+        </div>
+    </div>
+    <MudText Typo="Typo.h3" Class="pb-3">@lastPrice.ClosePrice @asset.Currency</MudText>
 
     <div class="d-flex gap-3 justify-content-start w-100">
         <AssetPriceChart AssetId="asset.Id" OnHorizonChanged="@UpdateHorizon"/>
@@ -21,7 +30,6 @@ else
     <MudText Typo="Typo.body1">Loading data...</MudText>
 }
 
-
 @code {
     [Parameter]
     public string id { get; set; }
@@ -29,6 +37,7 @@ else
 
     private AssetDto asset;
     private List<AssetPriceDto> assetPrices;
+    private AssetPriceDto lastPrice;
     private string horizon = "Max";
 
     protected override async Task OnInitializedAsync()
@@ -56,6 +65,7 @@ else
             return;
         }else{
             assetPrices = await response.Content.ReadFromJsonAsync<List<AssetPriceDto>>();
+            lastPrice = assetPrices.Last();
         }    
     }
 

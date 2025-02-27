@@ -89,7 +89,6 @@ else
 {
     <MudTable Items="@assets" Hover="true" Dense="true" Breakpoint="Breakpoint.Sm">
         <HeaderContent >
-            <MudTh Style="font-weight:bold">Asset ID</MudTh>
             <MudTh Style="font-weight:bold">Ticker</MudTh>
             <MudTh Style="font-weight:bold">Name</MudTh>
             <MudTh Style="font-weight:bold">Currency</MudTh>
@@ -101,9 +100,7 @@ else
             @* <MudTd DataLabel="Asset ID">@asset.Id</MudTd> *@
             @* <MudTd DataLabel="Ticker">@asset.Ticker</MudTd> *@
             @* <MudTd DataLabel="Name">@asset.Name</MudTd> *@
-            @* <MudTd DataLabel="Currency">@asset.Currency</MudTd> *@
 
-            <MudTd DataLabel="Asset ID"><MudLink Href="@($"/assets/{asset.Id}")">@asset.Id</MudLink></MudTd>
 
             <MudTd DataLabel="Ticker">
                 @if (editingAssetId == asset.Id && editableAsset != null){
@@ -121,7 +118,7 @@ else
                 }
                 else
                 {
-                    <MudText>@asset.Name</MudText>
+                    <MudLink Href="@($"/assets/{asset.Id}")"><MudText>@asset.Name</MudText></MudLink>
                 }
             </MudTd>
 
